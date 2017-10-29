@@ -10,7 +10,6 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import model.User;
-import util.Service;
 
 public class LoginView extends GridPane implements View{
 	private LoginController lc;
@@ -58,7 +57,7 @@ public class LoginView extends GridPane implements View{
 	
 	private void initHandlers() {
 		LogInButton.setOnAction(e ->  {
-			user = Service.logIn(usernameField.getText(), passwordField.getText());
+			user = lc.logIn(usernameField.getText(), passwordField.getText());
 			if(user != null){
 				lc.changeControl (Code.CVC_CODE, Code.CASHER_VIEW);
 				System.out.println("LOGGED IN");
