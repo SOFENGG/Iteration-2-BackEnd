@@ -6,6 +6,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import model.User;
 import util.Query;
+import view.AlertBox;
 import view.LoginView;
 
 public class LoginController {
@@ -38,15 +39,23 @@ public class LoginController {
 	
 	//login view services
 	
-	//assume logging in will only return one user 
-	public User logIn(String user, String pass){
+	public void logIn(String user, String pass){
 		ArrayList<User> users = Query.getInstance().userQuery("select * from users where username = '"+user+"' and password = '"+pass+"';");
-		
-		if(users.size() > 0)
+
+		if(users.size() > 0){
 			//log in success
-			return users.get(0);
-		else
-			return null;
+			if(users.get(0).getAccessLevel() == 1){
+				//cashier view
+				mc.passUser(Code.CVC_CODE, users.get(0));
+				changeControl (Code.CVC_CODE, Code.CASHER_VIEW);
+			}else{
+				//manager view
+				mc.passUser(Code.MVC_CODE, users.get(0));
+				changeControl (Code.MVC_CODE, Code.MANAGER_VIEW);
+			}
+			System.out.println("LOGGED IN");
+		} else 
+			new AlertBox("yo", "Wrong Password/and or Username");
 	}
 
 }

@@ -2,6 +2,7 @@ package model;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -47,6 +48,24 @@ public class Database {
 		return null;
 	}
 	
+	//update
+	public int executeUpdate(PreparedStatement ps){
+		int success = 0;
+		try{
+			success = ps.executeUpdate();
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+		return success;
+	}
+	//execute
+	public void execute(PreparedStatement ps){
+		try{
+			ps.execute();
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+	}
 	//this method needs to be called after every query
 	public void queryClose(){
 		try {
@@ -65,5 +84,9 @@ public class Database {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public Connection getConnection(){
+		return con;
 	}
 }

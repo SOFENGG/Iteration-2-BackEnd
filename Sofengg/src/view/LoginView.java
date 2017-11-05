@@ -57,12 +57,7 @@ public class LoginView extends GridPane implements View{
 	
 	private void initHandlers() {
 		LogInButton.setOnAction(e ->  {
-			user = lc.logIn(usernameField.getText(), passwordField.getText());
-			if(user != null){
-				lc.changeControl (Code.CVC_CODE, Code.CASHER_VIEW);
-				System.out.println("LOGGED IN");
-			} else 
-				new AlertBox("yo", "Wrong Password/and or Username");
+			lc.logIn(usernameField.getText(), passwordField.getText());
 		});
 		
 	}

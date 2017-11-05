@@ -1,10 +1,18 @@
 package controller;
 
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import model.CartItem;
+import model.Database;
 import model.Item;
+import model.User;
 import util.Query;
 import view.CashierView;
 
@@ -12,10 +20,15 @@ public class CashierViewController {
 
 	private MainController mc;
 	private CashierView cv;
+	private User user;
+	
+	private ArrayList<CartItem> cartItems;
 	
 	public CashierViewController (MainController mc) {
 		this.mc = mc;
 		cv = new CashierView (this);
+		
+		cartItems = new ArrayList<CartItem>();
 	}
 	
 	public Pane getView (int view) {
@@ -32,17 +45,21 @@ public class CashierViewController {
 	public MainController getMainController() {
 		return mc;
 	}
-	
+	 
 	public void changeControl (int requestCode, int view) {
 		mc.setScene(requestCode, view);
 	}
-	
+	 
+	public void setUser(User user){
+		this.user = user;
+		System.out.println("Welcome Cashier " + user.getName());
+	}
 	//cashier view services
 	
 	//no filter/search
 	public ArrayList<Item> allItems(){
 		ArrayList<Item> items = Query.getInstance().itemQuery("select * from items;");
-		return items;
+		return items; 
 	}
 	
 	//search
@@ -53,4 +70,73 @@ public class CashierViewController {
 			return null;
 		return items;
 	}
+	
+	public boolean addToCart(int id, int price, int quantity){
+		String update = "update items set stock = stock - ? where item_code = ? and stock  >= ?";
+		try {
+			PreparedStatement ps = Database.getInstance().getConnection().prepareStatement(update);
+			ps.setInt(1, quantity);
+			ps.setInt(2, id);
+			ps.setInt(3, quantity);
+			if(Database.getInstance().executeUpdate(ps) == 0)
+				return false; //not enough stock
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		cartItems.add(new CartItem(id, price * quantity, quantity));
+		return true;
+	}
+	
+	public void clearCart(){
+		String update = "update items set stock = stock + ? where item_code = ?";
+		for(CartItem ci : cartItems){
+			try {
+				PreparedStatement ps = Database.getInstance().getConnection().prepareStatement(update);
+				ps.setInt(1, ci.getQuantity());
+				ps.setInt(2, ci.getItemCode());
+				Database.getInstance().executeUpdate(ps);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		cartItems.clear();
+	}
+	
+	public void buyItems(){	
+		String item_log = "insert into items_log (item_code, type, quantity_sold, price_sold, date_sold) values (?, ?, ?, ?, ?)";
+		String accounting = "insert into accounting (user_id, retail, whole_sale, date_sale) values (?, ?, ?, ?)";
+		
+		Calendar cal = Calendar.getInstance();
+		Date today = new Date(cal.getTime().getTime());
+		
+		for(CartItem ci : cartItems){
+			//item_log
+			try {
+				PreparedStatement ps = Database.getInstance().getConnection().prepareStatement(item_log);
+				ps.setInt(1, ci.getItemCode());
+				ps.setString(2, "wtf is type?");
+				ps.setInt(3, ci.getQuantity());
+				ps.setInt(4, ci.getPriceSold());
+				ps.setDate(5, today);
+				Database.getInstance().executeUpdate(ps);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			//accounting
+			try {
+				PreparedStatement ps = Database.getInstance().getConnection().prepareStatement(accounting);
+				ps.setInt(1, user.getID());
+				ps.setInt(2, ci.getPriceSold() / ci.getQuantity());
+				ps.setInt(3, ci.getPriceSold());
+				ps.setDate(4, today);
+				Database.getInstance().executeUpdate(ps);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		cartItems.clear();
+	}
+	
+	
 }

@@ -2,6 +2,7 @@ package controller;
 
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import model.User;
 
 public class MainController extends Controller {
 	private LoginController lc;
@@ -28,6 +29,15 @@ public class MainController extends Controller {
 			case Code.CVC_CODE: scene.setRoot(cvc.getView(view));
 				break;
 			case Code.MVC_CODE: scene.setRoot(mvc.getView(view));
+				break;
+		}
+	}
+	
+	public void passUser(int requestCode, User user){
+		switch(requestCode){
+			case Code.CVC_CODE: cvc.setUser(user);
+				break;
+			case Code.MVC_CODE: mvc.setUser(user);
 				break;
 		}
 	}

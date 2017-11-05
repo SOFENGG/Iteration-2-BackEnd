@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import model.Item;
+import model.User;
 import util.Query;
 import view.CashierView;
 import view.ManagerView;
@@ -13,6 +14,8 @@ public class ManagerViewController {
 
 	private MainController mc;
 	private ManagerView mv;
+	
+	private User user;
 	
 	public ManagerViewController (MainController mc) {
 		this.mc = mc;
@@ -38,6 +41,10 @@ public class ManagerViewController {
 		mc.setScene(requestCode, view);
 	}
 	
+	public void setUser(User user){
+		this.user = user;
+		System.out.println("Welcome Manager " + user.getName());
+	}
 	//manager view services
 	
 	//no filter/search
