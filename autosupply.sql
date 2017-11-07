@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.20, for Win64 (x86_64)
 --
 -- Host: localhost    Database: autosupply
 -- ------------------------------------------------------
--- Server version	5.7.19-log
+-- Server version	5.7.20-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -28,6 +28,9 @@ CREATE TABLE `accounting` (
   `retail` int(11) NOT NULL,
   `whole_sale` int(11) NOT NULL,
   `date_sale` date NOT NULL,
+  `price_sold` decimal(19,4) NOT NULL,
+  `original_price` decimal(19,4) NOT NULL,
+  `transaction_type` varchar(45) NOT NULL,
   PRIMARY KEY (`accounting_id`),
   UNIQUE KEY `user_id_UNIQUE` (`accounting_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -58,6 +61,8 @@ CREATE TABLE `customers` (
   `balance` int(11) NOT NULL,
   `quantity_purchases` int(11) NOT NULL,
   `total_visits` int(11) NOT NULL,
+  `debt` decimal(19,4) DEFAULT NULL,
+  `debt_limit` decimal(19,4) DEFAULT NULL,
   PRIMARY KEY (`account_id`),
   UNIQUE KEY `account_id_UNIQUE` (`account_id`),
   UNIQUE KEY `sale_code_UNIQUE` (`sale_code`)
@@ -119,8 +124,11 @@ CREATE TABLE `items_log` (
   `item_code` int(11) NOT NULL,
   `type` varchar(45) NOT NULL,
   `quantity_sold` int(11) NOT NULL,
+  `original_price` decimal(19,4) NOT NULL,
   `price_sold` decimal(19,4) NOT NULL,
   `date_sold` date NOT NULL,
+  `transaction_type` varchar(45) NOT NULL,
+  `is_loan` tinyint(4) NOT NULL,
   PRIMARY KEY (`sale_code`),
   UNIQUE KEY `item_code_UNIQUE` (`item_code`),
   UNIQUE KEY `sale_code_UNIQUE` (`sale_code`)
@@ -134,6 +142,57 @@ CREATE TABLE `items_log` (
 LOCK TABLES `items_log` WRITE;
 /*!40000 ALTER TABLE `items_log` DISABLE KEYS */;
 /*!40000 ALTER TABLE `items_log` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `service_log`
+--
+
+DROP TABLE IF EXISTS `service_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `service_log` (
+  `service_id` int(11) NOT NULL,
+  `worker_id` int(11) NOT NULL,
+  `date` date NOT NULL,
+  PRIMARY KEY (`service_id`),
+  UNIQUE KEY `worker_id_UNIQUE` (`worker_id`),
+  UNIQUE KEY `service_id_UNIQUE` (`service_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `service_log`
+--
+
+LOCK TABLES `service_log` WRITE;
+/*!40000 ALTER TABLE `service_log` DISABLE KEYS */;
+/*!40000 ALTER TABLE `service_log` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `services`
+--
+
+DROP TABLE IF EXISTS `services`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `services` (
+  `service_id` int(11) NOT NULL,
+  `service_name` varchar(45) NOT NULL,
+  `price` decimal(19,4) NOT NULL,
+  PRIMARY KEY (`service_id`),
+  UNIQUE KEY `service_id_UNIQUE` (`service_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `services`
+--
+
+LOCK TABLES `services` WRITE;
+/*!40000 ALTER TABLE `services` DISABLE KEYS */;
+/*!40000 ALTER TABLE `services` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -192,6 +251,31 @@ LOCK TABLES `users` WRITE;
 INSERT INTO `users` VALUES (1,'Angelo','angelo','1234','2'),(4,'Anj','anj','1234','1');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `workers`
+--
+
+DROP TABLE IF EXISTS `workers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `workers` (
+  `worker_id` int(11) NOT NULL,
+  `name` varchar(45) NOT NULL,
+  `salary` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`worker_id`),
+  UNIQUE KEY `worker_id_UNIQUE` (`worker_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `workers`
+--
+
+LOCK TABLES `workers` WRITE;
+/*!40000 ALTER TABLE `workers` DISABLE KEYS */;
+/*!40000 ALTER TABLE `workers` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -202,4 +286,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-10-14 19:50:41
+-- Dump completed on 2017-11-07 15:11:29
