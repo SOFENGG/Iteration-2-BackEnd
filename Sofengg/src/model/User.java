@@ -1,6 +1,13 @@
 package model;
 
 public class User {
+	public static final String TABLE = "users";
+	public static final String COLUMN_USER_ID = "user_id";
+	public static final String COLUMN_NAME = "name";
+	public static final String COLUMN_USERNAME = "username";
+	public static final String COLUMN_PASSWORD = "password";
+	public static final String COLUMN_USER_LEVEL = "user_level";
+	
 	private int userID;
 	private String name;
 	private String user;

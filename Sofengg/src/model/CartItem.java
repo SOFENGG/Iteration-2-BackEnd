@@ -22,4 +22,8 @@ public class CartItem {
 	public int getQuantity(){
 		return quantity;
 	}
+	
+	public void setPriceSold(int newPrice){
+		this.price_sold = newPrice;
+	}
 }

@@ -41,8 +41,18 @@ public class Query {
 		
 		try {
 			while(rs.next()){
-				Item item = new Item(rs.getInt("item_code"), rs.getString("name"), rs.getString("description"), rs.getString("category"), rs.getString("manufacturer"),
-						rs.getInt("supplier_code"), rs.getInt("stock"), rs.getDate("date_purchase"), rs.getBigDecimal("price_supplier"), rs.getBigDecimal("price_customer"));
+				Item item = new Item(rs.getString(Item.COLUMN_ITEM_CODE),
+						rs.getString(Item.COLUMN_NAME),
+						rs.getString(Item.COLUMN_DESCRIPTION),
+						rs.getString(Item.COLUMN_CATEGORY),
+						rs.getString(Item.COLUMN_MANUFACTURER),
+						rs.getInt(Item.COLUMN_SUPPLIER_CODE),
+						rs.getInt(Item.COLUMN_STOCK),
+						rs.getInt(Item.COLUMN_RESERVED),
+						rs.getDate(Item.COLUMN_DATE_PURCHASE),
+						rs.getBigDecimal(Item.COLUMN_PRICE_SUPPLIER),
+						rs.getBigDecimal(Item.COLUMN_PRICE_CUSTOMER));
+				
 				items.add(item);
 			}
 			Database.getInstance().queryClose();

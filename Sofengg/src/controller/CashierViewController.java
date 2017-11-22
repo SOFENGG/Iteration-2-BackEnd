@@ -54,8 +54,35 @@ public class CashierViewController {
 		this.user = user;
 		System.out.println("Welcome Cashier " + user.getName());
 	}
-	//cashier view services
 	
+	public void logout(){
+		this.user = null;
+		changeControl(Code.LC_CODE, Code.LOGIN_VIEW);
+	}
+	
+	//cashier view services
+	//return
+	public boolean returnItem(int itemId){
+		//increment stock by 1
+		return true;
+	}
+	
+	//get service workers
+	public void getServiceWorkers(){
+		//query service workers
+	}
+	
+	//insert servicelog
+	public void service(int workerId, int serviceId){
+		//add service id and worker id to service log
+	}
+	
+	//change price
+	public void changePrice(CartItem c, int newPrice){
+		c.setPriceSold(c.getQuantity() * newPrice);
+	}
+
+	//<-- search functions -->
 	//no filter/search
 	public ArrayList<Item> allItems(){
 		ArrayList<Item> items = Query.getInstance().itemQuery("select * from items;");
@@ -71,6 +98,7 @@ public class CashierViewController {
 		return items;
 	}
 	
+	//<-- transaction functions -->
 	public boolean addToCart(int id, int price, int quantity){
 		String update = "update items set stock = stock - ? where item_code = ? and stock  >= ?";
 		try {
