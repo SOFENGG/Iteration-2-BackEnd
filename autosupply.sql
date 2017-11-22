@@ -90,7 +90,6 @@ CREATE TABLE `items_log` (
   `sale_id` int(11) NOT NULL,
   `item_code` varchar(45) NOT NULL,
   `transaction_id` int(11) NOT NULL,
-  `type` varchar(45) NOT NULL,
   `quantity_sold` int(11) NOT NULL,
   `original_price` decimal(19,4) NOT NULL,
   `price_sold` decimal(19,4) NOT NULL,
@@ -191,12 +190,12 @@ DROP TABLE IF EXISTS `transactions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `transactions` (
-  `transaction_id` int(11) NOT NULL AUTO_INCREMENT,
+  `transaction_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `transaction_type` varchar(45) NOT NULL,
   `is_loan` tinyint(4) NOT NULL,
   `date_sold` date NOT NULL,
-  `total_price` int(11) NOT NULL,
+  `total_price` decimal(19,4) NOT NULL,
   PRIMARY KEY (`transaction_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -248,7 +247,7 @@ DROP TABLE IF EXISTS `workers`;
 CREATE TABLE `workers` (
   `worker_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
-  `salary` varchar(45) DEFAULT NULL,
+  `salary` decimal(19,4) NOT NULL,
   PRIMARY KEY (`worker_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -259,7 +258,7 @@ CREATE TABLE `workers` (
 
 LOCK TABLES `workers` WRITE;
 /*!40000 ALTER TABLE `workers` DISABLE KEYS */;
-INSERT INTO `workers` VALUES (1,'jack','20'),(2,'col','40');
+INSERT INTO `workers` VALUES (1,'jack',20.0000),(2,'col',40.0000);
 /*!40000 ALTER TABLE `workers` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -272,4 +271,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-11-22 16:23:25
+-- Dump completed on 2017-11-22 21:06:07

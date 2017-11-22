@@ -1,5 +1,7 @@
 package model;
 
+import java.math.BigDecimal;
+
 public class ItemLog {
 	public static final String TABLE = "items_log";
 	public static final String COLUMN_SALE_ID = "sale_id";
@@ -15,11 +17,11 @@ public class ItemLog {
 	private String transactionId;
 	private String type;
 	private int quantitySold;
-	private int originalPrice;
-	private int priceSold;
+	private BigDecimal originalPrice;
+	private BigDecimal priceSold;
 	
 	public ItemLog(String saleId, String itemCode, String transactionId, String type, int quantitySold,
-			int originalPrice, int priceSold) {
+			BigDecimal originalPrice, BigDecimal priceSold) {
 		this.saleId = saleId;
 		this.itemCode = itemCode;
 		this.transactionId = transactionId;
@@ -49,11 +51,11 @@ public class ItemLog {
 		return quantitySold;
 	}
 
-	public int getOriginalPrice() {
+	public BigDecimal getOriginalPrice() {
 		return originalPrice;
 	}
 
-	public int getPriceSold() {
+	public BigDecimal getPriceSold() {
 		return priceSold;
 	}
 	

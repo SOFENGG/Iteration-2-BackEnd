@@ -1,5 +1,6 @@
 package model;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 
 public class Transaction {
@@ -17,10 +18,10 @@ public class Transaction {
 	private String transactionType;
 	private boolean isLoan;
 	private Date dateSold;
-	private double totalPrice;
+	private BigDecimal totalPrice;
 	
 	public Transaction(int transactionID, int userID, String transactionType, boolean isLoan, Date dateSold,
-			double totalPrice) {
+			BigDecimal totalPrice) {
 		this.transactionID = transactionID;
 		this.userID = userID;
 		this.transactionType = transactionType;
@@ -69,11 +70,11 @@ public class Transaction {
 		this.dateSold = dateSold;
 	}
 
-	public double getTotalPrice() {
+	public BigDecimal getTotalPrice() {
 		return totalPrice;
 	}
 
-	public void setTotalPrice(double totalPrice) {
+	public void setTotalPrice(BigDecimal totalPrice) {
 		this.totalPrice = totalPrice;
 	}
 }

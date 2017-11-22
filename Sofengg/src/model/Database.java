@@ -53,6 +53,7 @@ public class Database {
 		int success = 0;
 		try{
 			success = ps.executeUpdate();
+			ps.close();
 		}catch(SQLException e){
 			e.printStackTrace();
 		}

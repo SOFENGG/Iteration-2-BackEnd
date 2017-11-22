@@ -62,5 +62,39 @@ public class Query {
 		return items;
 	}
 	
-	//add more query for each class
+	//transactions
+	public ArrayList<Transaction> transactionQuery(String query){
+		ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+		ResultSet rs = Database.getInstance().query(query);
+		
+		try {
+			while(rs.next()){
+				Transaction tran = new Transaction(rs.getInt(Transaction.COLUMN_TRANSACTION_ID),
+												rs.getInt(Transaction.COLUMN_USER_ID),
+												rs.getString(Transaction.COLUMN_TRANSACTION_TYPE),
+												rs.getBoolean(Transaction.COLUMN_IS_LOAN),
+												rs.getDate(Transaction.COLUMN_DATE_SOLD),
+												rs.getBigDecimal(Transaction.COLUMN_TOTAL_PRICE));
+				transactions.add(tran);
+			}
+			Database.getInstance().queryClose();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return transactions;
+	}
+	
+	public int getTransactionCount(){
+		ResultSet rs = Database.getInstance().query("select * from " + Transaction.TABLE);
+		
+		try {
+			rs.last();
+			return rs.getRow();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return 0;
+	}
 }

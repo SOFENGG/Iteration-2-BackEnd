@@ -1,5 +1,7 @@
 package model;
 
+import java.math.BigDecimal;
+
 public class Worker {
 	
 	public static final String TABLE = "users";
@@ -9,9 +11,9 @@ public class Worker {
 
 	private int workerID;
 	private String name;
-	private String salary;
+	private BigDecimal salary;
 	
-	public Worker(int workerID, String name, String salary) {
+	public Worker(int workerID, String name, BigDecimal salary) {
 		this.workerID = workerID;
 		this.name = name;
 		this.salary = salary;
@@ -33,11 +35,11 @@ public class Worker {
 		this.name = name;
 	}
 
-	public String getSalary() {
+	public BigDecimal getSalary() {
 		return salary;
 	}
 
-	public void setSalary(String salary) {
+	public void setSalary(BigDecimal salary) {
 		this.salary = salary;
 	}
 	

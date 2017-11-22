@@ -1,5 +1,6 @@
 package controller;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,8 +11,11 @@ import java.util.Calendar;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import model.CartItem;
+import model.Customer;
 import model.Database;
 import model.Item;
+import model.ItemLog;
+import model.Transaction;
 import model.User;
 import util.Query;
 import view.CashierView;
@@ -20,7 +24,9 @@ public class CashierViewController {
 
 	private MainController mc;
 	private CashierView cv;
-	private User user;
+	
+	private User cashier;
+	private Customer customerLoggedIn;
 	
 	private ArrayList<CartItem> cartItems;
 	
@@ -50,21 +56,39 @@ public class CashierViewController {
 		mc.setScene(requestCode, view);
 	}
 	 
-	public void setUser(User user){
-		this.user = user;
-		System.out.println("Welcome Cashier " + user.getName());
+	public void setUser(User cashier){
+		this.cashier = cashier;
+		System.out.println("Welcome Cashier " + cashier.getName());
 	}
 	
 	public void logout(){
-		this.user = null;
+		this.cashier = null;
 		changeControl(Code.LC_CODE, Code.LOGIN_VIEW);
 	}
 	
 	//cashier view services
+	
+	public boolean managerAccess(String managerPassword){
+		return true;
+	}
+	
+	public boolean loginCustomer(){
+		return true;
+	}
+	
+	public boolean removeCustomer(){
+		return true;
+	}
+	
 	//return
 	public boolean returnItem(int itemId){
 		//increment stock by 1
 		return true;
+	}
+	
+	//override price
+	public void overridePrice(CartItem c, BigDecimal newPrice){
+		c.setPriceSold(newPrice.multiply(BigDecimal.valueOf(c.getQuantity())));
 	}
 	
 	//get service workers
@@ -77,32 +101,15 @@ public class CashierViewController {
 		//add service id and worker id to service log
 	}
 	
-	//change price
-	public void changePrice(CartItem c, int newPrice){
-		c.setPriceSold(c.getQuantity() * newPrice);
-	}
-
-	//<-- search functions -->
-	//no filter/search
-	public ArrayList<Item> allItems(){
-		ArrayList<Item> items = Query.getInstance().itemQuery("select * from items;");
-		return items; 
-	}
-	
-	//search
-	public ArrayList<Item> searchItems(String search){
-		ArrayList<Item> items = Query.getInstance().itemQuery("select * from items where concat(name, description, category, manufacturer) like '%" + search + "%';");
-		if (items.size() == 0)
-			//no matches
-			return null;
-		return items;
-	}
-	
 	//<-- transaction functions -->
-	public boolean addToCart(int id, int price, int quantity){
-		String update = "update items set stock = stock - ? where item_code = ? and stock  >= ?";
+	
+	public boolean addToCart(int id, BigDecimal price, int quantity){
+		String updateReserved = "update " + Item.TABLE + 
+						" set " + Item.COLUMN_RESERVED + " =  " + Item.COLUMN_RESERVED + " + (" + Item.COLUMN_STOCK + " - ?)" + 
+						" where " + Item.COLUMN_ITEM_CODE + " = ? and " + Item.COLUMN_STOCK + " - " + Item.COLUMN_RESERVED + "  >= ?";
+		
 		try {
-			PreparedStatement ps = Database.getInstance().getConnection().prepareStatement(update);
+			PreparedStatement ps = Database.getInstance().getConnection().prepareStatement(updateReserved);
 			ps.setInt(1, quantity);
 			ps.setInt(2, id);
 			ps.setInt(3, quantity);
@@ -112,15 +119,18 @@ public class CashierViewController {
 			e.printStackTrace();
 		}
 		
-		cartItems.add(new CartItem(id, price * quantity, quantity));
+		cartItems.add(new CartItem(id, price.multiply(BigDecimal.valueOf(quantity)), quantity));
 		return true;
 	}
 	
 	public void clearCart(){
-		String update = "update items set stock = stock + ? where item_code = ?";
+		String updateReserved = "update " + Item.TABLE + 
+								" set " + Item.COLUMN_RESERVED + " = " + Item.COLUMN_RESERVED + " - ?" + 
+								" where " + Item.COLUMN_ITEM_CODE + " = ?";
+		
 		for(CartItem ci : cartItems){
 			try {
-				PreparedStatement ps = Database.getInstance().getConnection().prepareStatement(update);
+				PreparedStatement ps = Database.getInstance().getConnection().prepareStatement(updateReserved);
 				ps.setInt(1, ci.getQuantity());
 				ps.setInt(2, ci.getItemCode());
 				Database.getInstance().executeUpdate(ps);
@@ -131,40 +141,77 @@ public class CashierViewController {
 		cartItems.clear();
 	}
 	
-	public void buyItems(){	
-		String item_log = "insert into items_log (item_code, type, quantity_sold, price_sold, date_sold) values (?, ?, ?, ?, ?)";
-		String accounting = "insert into accounting (user_id, retail, whole_sale, date_sale) values (?, ?, ?, ?)";
+	public void buyItems(String transactionType, boolean isloan){	
+		String item_log = "insert into " + ItemLog.TABLE + " ("+ItemLog.COLUMN_ITEM_CODE+
+															", "+ItemLog.COLUMN_TRANSACTION_ID+
+															", "+ItemLog.COLUMN_QUANTITY_SOLD+
+															", "+ItemLog.COLUMN_ORIGINAL_SOLD+
+															", "+ItemLog.COLUMN_PRICE_SOLD+") values (?, ?, ?, ?, ?)";
+		
+		String updateReserved = "update " + Item.TABLE + 
+								" set " + Item.COLUMN_RESERVED + " = " + Item.COLUMN_RESERVED + " - ?"+
+								" where " + Item.COLUMN_ITEM_CODE + " = ?";
+		
+		String transaction = "insert into " + Transaction.TABLE + " (" + Transaction.COLUMN_TRANSACTION_ID+ 
+																	", " + Transaction.COLUMN_USER_ID + 
+																	", " + Transaction.COLUMN_TRANSACTION_TYPE + 
+																	", " + Transaction.COLUMN_IS_LOAN + 
+																	", " + Transaction.COLUMN_DATE_SOLD + 
+																	", " + Transaction.COLUMN_TOTAL_PRICE + ") values (?, ?, ?, ?, ?, ?)";
 		
 		Calendar cal = Calendar.getInstance();
 		Date today = new Date(cal.getTime().getTime());
+		BigDecimal totalPrice = BigDecimal.valueOf(0);
+		int transactionId = Query.getInstance().getTransactionCount() + 1;
 		
 		for(CartItem ci : cartItems){
-			//item_log
 			try {
-				PreparedStatement ps = Database.getInstance().getConnection().prepareStatement(item_log);
-				ps.setInt(1, ci.getItemCode());
-				ps.setString(2, "wtf is type?");
-				ps.setInt(3, ci.getQuantity());
-				ps.setInt(4, ci.getPriceSold());
-				ps.setDate(5, today);
-				Database.getInstance().executeUpdate(ps);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			//accounting
-			try {
-				PreparedStatement ps = Database.getInstance().getConnection().prepareStatement(accounting);
-				ps.setInt(1, user.getID());
-				ps.setInt(2, ci.getPriceSold() / ci.getQuantity());
-				ps.setInt(3, ci.getPriceSold());
-				ps.setDate(4, today);
-				Database.getInstance().executeUpdate(ps);
+				
+				//item_log
+				PreparedStatement log = Database.getInstance().getConnection().prepareStatement(item_log);
+				log.setInt(1, ci.getItemCode());
+				log.setInt(2, transactionId);
+				log.setInt(3, ci.getQuantity());
+				log.setBigDecimal(4, ci.getOriginalPrice());
+				log.setBigDecimal(5, ci.getPriceSold());
+				
+				//update item reserved
+				PreparedStatement reserved = Database.getInstance().getConnection().prepareStatement(updateReserved); 
+				reserved.setInt(1, ci.getQuantity());
+				reserved.setInt(2, ci.getItemCode());
+				
+				//calculates for total price of whole cart
+				totalPrice.add(ci.getPriceSold());
+				
+				Database.getInstance().executeUpdate(log);
+				Database.getInstance().executeUpdate(reserved);
+				
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
+		
+		//transaction
+		try {
+			PreparedStatement ps = Database.getInstance().getConnection().prepareStatement(transaction);
+			ps.setInt(1, transactionId);
+			ps.setInt(2, cashier.getID());
+			ps.setString(3, transactionType);
+			ps.setBoolean(4, isloan);
+			ps.setBigDecimal(5, totalPrice);
+			ps.setDate(6, today);
+			Database.getInstance().executeUpdate(ps);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		if(isloan){
+			
+			
+			
+		}
+		
 		cartItems.clear();
 	}
-	
 	
 }

@@ -40,7 +40,7 @@ public class LoginController {
 	//login view services
 	
 	public void logIn(String user, String pass){
-		ArrayList<User> users = Query.getInstance().userQuery("select * from users where username = '"+user+"' and password = '"+pass+"';");
+		ArrayList<User> users = Query.getInstance().userQuery("select * from "+User.TABLE+" where "+User.COLUMN_USERNAME+" = '"+user+"' and "+User.COLUMN_PASSWORD+" = '"+pass+"';");
 
 		if(users.size() > 0){
 			//log in success
