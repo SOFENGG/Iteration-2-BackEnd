@@ -1,25 +1,77 @@
 package view;
 
 import controller.CashierViewController;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 
-public class CashierView extends BorderPane implements View{
+public class CashierView extends GridPane implements View{
 
 	private CashierViewController cvc;
 	
-	private Label label;
+	protected final ImageView logoView = new ImageView();
+	protected final Image logo = new Image(("E&Elogo.png"));
+	protected boolean isBlack = false;
+	
+	private CustomerBox CustBox;
+	private NavigationBox NavBox;
+	//private TransactionBox TranBox;
 	
 	public CashierView (CashierViewController cvc) {
+		super ();
 		this.cvc = cvc;
 		
-		initCV ();
+		setPadding(new Insets(10,10,10,10));
+		setVgap(12);
+		setHgap(10);
 		
-		setCenter (label);
+		initCV ();
+		initHandlers ();
+		
+		getChildren().addAll(CustBox, NavBox);
+		GridPane.setConstraints(logoView, 0, 0);
+		GridPane.setConstraints(CustBox, 1, 0);
+		GridPane.setConstraints(NavBox, 0, 1);
+		//GridPane.setConstraints(cartPane, 1, 1);
 	}
 
 	private void initCV() {
-		label = new Label ("Test");
+		initLogo ();
+		CustBox = new CustomerBox(cvc);	
+		NavBox = new NavigationBox(cvc);
+		//TranBox = new TransactionBox(cvc);
+	}
+
+	private void initLogo() {
+		logoView.setImage(logo);
+		logoView.setFitHeight(75);
+		logoView.setPreserveRatio(true);
+		
+		getChildren().add(logoView);
+	}
+	
+	private void initHandlers () {
+		logoView.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+		     @Override
+		     public void handle(MouseEvent event) {
+		         if(isBlack){
+		        	 setStyle(null);
+		        	 isBlack = false;
+		         }
+		         else {
+		        	 setStyle("-fx-base: Black;");
+		        	 isBlack = true;
+		         }
+		     }
+		});
 	}
 
 	@Override

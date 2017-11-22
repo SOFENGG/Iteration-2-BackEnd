@@ -9,6 +9,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import model.User;
 
 public class LoginView extends GridPane implements View{
@@ -42,15 +44,20 @@ public class LoginView extends GridPane implements View{
 
 	private void initLogin() {
 		LogInButton = new Button ("Log in");
-			
+		LogInButton.setStyle("-fx-focus-color: transparent; "
+				+ "-fx-base: Green; -fx-background-radius: 0%; "
+				+ "-fx-font-weight: bold");
+		
 		usernameField = new TextField();
 		passwordField = new PasswordField();
 		
 		LabelUser = new Label();
 		LabelUser.setText("Username");
+		LabelUser.setFont(Font.font("Arial", FontWeight.BLACK, 10));
 		
 		LabelPass = new Label();
 		LabelPass = new Label("Password");
+		LabelPass.setFont(Font.font("Arial", FontWeight.BLACK, 10));		
 		
 		getChildren().addAll(LabelUser, LabelPass, usernameField, passwordField, LogInButton);
 	}

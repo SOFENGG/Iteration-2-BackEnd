@@ -34,7 +34,7 @@ public class CashierViewController {
 	
 	public CashierViewController (MainController mc) {
 		this.mc = mc;
-		//cv = new CashierView (this);
+		cv = new CashierView (this);
 		
 		cartItems = new ArrayList<CartItem>();
 	}

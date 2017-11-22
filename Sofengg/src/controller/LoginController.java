@@ -55,7 +55,7 @@ public class LoginController {
 			}
 			System.out.println("LOGGED IN");
 		} else 
-			new AlertBox("yo", "Wrong Password/and or Username");
+			new AlertBox("Wrong Password/and or Username");
 	}
 
 }
