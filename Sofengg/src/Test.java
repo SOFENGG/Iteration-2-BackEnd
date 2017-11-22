@@ -10,6 +10,12 @@ public class Test {
 		
 		Database.getInstance().connect();
 		
+		String password = "xd";
+		while(!cvc.managerAccess(password)){
+			System.out.println("access denied: try again!");
+			password = sc.nextLine();
+		}
+		
 		Database.getInstance().close();
 	}
 }

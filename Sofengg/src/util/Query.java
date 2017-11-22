@@ -97,4 +97,46 @@ public class Query {
 		
 		return 0;
 	}
+
+	//customer queries
+	public ArrayList<Customer> customerQuery(String query){
+		ArrayList<Customer> customer = new ArrayList<Customer>();
+		ResultSet rs = Database.getInstance().query(query);
+		
+		try {
+			while(rs.next()){
+				Customer c = new Customer(rs.getInt(Customer.COLUMN_ACCOUNT_ID),
+										rs.getString(Customer.COLUMN_NAME), 
+										rs.getString(Customer.COLUMN_ADDRESS),
+										rs.getInt(Customer.COLUMN_CONTACT_NUMBER),
+										rs.getInt(Customer.COLUMN_TOTAL_VISITS),
+										rs.getBigDecimal(Customer.COLUMN_DEBT),
+										rs.getBigDecimal(Customer.COLUMN_DEBT_LIMIT));
+				customer.add(c);
+			}
+			Database.getInstance().queryClose();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return customer;
+	}
+	
+	//worker query
+	public ArrayList<Worker> workerQuery(String query){
+		ArrayList<Worker> workers = new ArrayList<Worker>();
+		ResultSet rs = Database.getInstance().query(query);
+		
+		try {
+			while(rs.next()){
+				Worker w = new Worker(rs.getInt(Worker.COLUMN_WORKER_ID),
+									rs.getString(Worker.COLUMN_NAME),
+									rs.getBigDecimal(Worker.COLUMN_SALARY));
+				workers.add(w);
+			}
+			Database.getInstance().queryClose();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return workers;
+	}
 }

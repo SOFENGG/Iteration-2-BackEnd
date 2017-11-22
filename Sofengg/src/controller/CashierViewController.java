@@ -15,8 +15,10 @@ import model.Customer;
 import model.Database;
 import model.Item;
 import model.ItemLog;
+import model.ServiceLog;
 import model.Transaction;
 import model.User;
+import util.CommonQuery;
 import util.Query;
 import view.CashierView;
 
@@ -26,13 +28,13 @@ public class CashierViewController {
 	private CashierView cv;
 	
 	private User cashier;
-	private Customer customerLoggedIn;
+	private Customer customer;
 	
 	private ArrayList<CartItem> cartItems;
 	
 	public CashierViewController (MainController mc) {
 		this.mc = mc;
-		cv = new CashierView (this);
+		//cv = new CashierView (this);
 		
 		cartItems = new ArrayList<CartItem>();
 	}
@@ -68,22 +70,39 @@ public class CashierViewController {
 	
 	//cashier view services
 	
+	//manager access -> called when action requires manager password
 	public boolean managerAccess(String managerPassword){
-		return true;
+		boolean accessGranted = false;
+		
+		if(Query.getInstance().userQuery("select * from " + User.TABLE + " where "+ User.COLUMN_PASSWORD + " = '"+ managerPassword + "' and " + User.COLUMN_USER_LEVEL + " = " + User.MANAGER_LEVEL + ";").size() > 0){
+			accessGranted = true;
+		}
+		
+		return accessGranted;
 	}
 	
-	public boolean loginCustomer(){
-		return true;
+	public void setCustomer(int accountId){
+		customer = CommonQuery.getCustomerWithId(accountId);
 	}
 	
-	public boolean removeCustomer(){
-		return true;
+	public void removeCustomer(){
+		customer = null;
 	}
 	
 	//return
-	public boolean returnItem(int itemId){
-		//increment stock by 1
-		return true;
+	public void returnItem(String itemCode, int quantity){
+		String updateReserved = "update " + Item.TABLE + 
+				" set " + Item.COLUMN_RESERVED + " = " + Item.COLUMN_RESERVED + " + ?" + 
+				" where " + Item.COLUMN_ITEM_CODE + " = '?'";
+
+		try {
+			PreparedStatement ps = Database.getInstance().getConnection().prepareStatement(updateReserved);
+			ps.setInt(1, quantity);
+			ps.setString(2, itemCode);
+			Database.getInstance().executeUpdate(ps);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	//override price
@@ -91,27 +110,38 @@ public class CashierViewController {
 		c.setPriceSold(newPrice.multiply(BigDecimal.valueOf(c.getQuantity())));
 	}
 	
-	//get service workers
-	public void getServiceWorkers(){
-		//query service workers
-	}
-	
 	//insert servicelog
 	public void service(int workerId, int serviceId){
 		//add service id and worker id to service log
+		String service_log = "insert into " + ServiceLog.TABLE + " ("+ServiceLog.COLUMN_SERVICE_ID+
+																", "+ServiceLog.COLUMN_WORKER_ID+
+																", "+ServiceLog.COLUMN_DATE+") values (?, ?, ?)";
+		
+		Calendar cal = Calendar.getInstance();
+		Date today = new Date(cal.getTime().getTime());
+		
+		try {
+			PreparedStatement ps = Database.getInstance().getConnection().prepareStatement(service_log);
+			ps.setInt(1, serviceId);
+			ps.setInt(2, workerId);
+			ps.setDate(3, today);
+			Database.getInstance().executeUpdate(ps);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	//<-- transaction functions -->
 	
-	public boolean addToCart(int id, BigDecimal price, int quantity){
+	public boolean addToCart(String itemCode, BigDecimal price, int quantity){
 		String updateReserved = "update " + Item.TABLE + 
 						" set " + Item.COLUMN_RESERVED + " =  " + Item.COLUMN_RESERVED + " + (" + Item.COLUMN_STOCK + " - ?)" + 
-						" where " + Item.COLUMN_ITEM_CODE + " = ? and " + Item.COLUMN_STOCK + " - " + Item.COLUMN_RESERVED + "  >= ?";
+						" where " + Item.COLUMN_ITEM_CODE + " = '?' and " + Item.COLUMN_STOCK + " - " + Item.COLUMN_RESERVED + "  >= ?";
 		
 		try {
 			PreparedStatement ps = Database.getInstance().getConnection().prepareStatement(updateReserved);
 			ps.setInt(1, quantity);
-			ps.setInt(2, id);
+			ps.setString(2, itemCode);
 			ps.setInt(3, quantity);
 			if(Database.getInstance().executeUpdate(ps) == 0)
 				return false; //not enough stock
@@ -119,20 +149,20 @@ public class CashierViewController {
 			e.printStackTrace();
 		}
 		
-		cartItems.add(new CartItem(id, price.multiply(BigDecimal.valueOf(quantity)), quantity));
+		cartItems.add(new CartItem(itemCode, price.multiply(BigDecimal.valueOf(quantity)), quantity));
 		return true;
 	}
 	
 	public void clearCart(){
 		String updateReserved = "update " + Item.TABLE + 
 								" set " + Item.COLUMN_RESERVED + " = " + Item.COLUMN_RESERVED + " - ?" + 
-								" where " + Item.COLUMN_ITEM_CODE + " = ?";
+								" where " + Item.COLUMN_ITEM_CODE + " = '?'";
 		
 		for(CartItem ci : cartItems){
 			try {
 				PreparedStatement ps = Database.getInstance().getConnection().prepareStatement(updateReserved);
 				ps.setInt(1, ci.getQuantity());
-				ps.setInt(2, ci.getItemCode());
+				ps.setString(2, ci.getItemCode());
 				Database.getInstance().executeUpdate(ps);
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -150,7 +180,7 @@ public class CashierViewController {
 		
 		String updateReserved = "update " + Item.TABLE + 
 								" set " + Item.COLUMN_RESERVED + " = " + Item.COLUMN_RESERVED + " - ?"+
-								" where " + Item.COLUMN_ITEM_CODE + " = ?";
+								" where " + Item.COLUMN_ITEM_CODE + " = '?'";
 		
 		String transaction = "insert into " + Transaction.TABLE + " (" + Transaction.COLUMN_TRANSACTION_ID+ 
 																	", " + Transaction.COLUMN_USER_ID + 
@@ -169,7 +199,7 @@ public class CashierViewController {
 				
 				//item_log
 				PreparedStatement log = Database.getInstance().getConnection().prepareStatement(item_log);
-				log.setInt(1, ci.getItemCode());
+				log.setString(1, ci.getItemCode());
 				log.setInt(2, transactionId);
 				log.setInt(3, ci.getQuantity());
 				log.setBigDecimal(4, ci.getOriginalPrice());
@@ -178,7 +208,7 @@ public class CashierViewController {
 				//update item reserved
 				PreparedStatement reserved = Database.getInstance().getConnection().prepareStatement(updateReserved); 
 				reserved.setInt(1, ci.getQuantity());
-				reserved.setInt(2, ci.getItemCode());
+				reserved.setString(2, ci.getItemCode());
 				
 				//calculates for total price of whole cart
 				totalPrice.add(ci.getPriceSold());

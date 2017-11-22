@@ -8,6 +8,9 @@ public class User {
 	public static final String COLUMN_PASSWORD = "password";
 	public static final String COLUMN_USER_LEVEL = "user_level";
 	
+	public static final int MANAGER_LEVEL = 2;
+	public static final int CASHIER_LEVEL = 1;
+	
 	private int userID;
 	private String name;
 	private String user;

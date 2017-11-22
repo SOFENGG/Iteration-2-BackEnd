@@ -2,7 +2,9 @@ package util;
 
 import java.util.ArrayList;
 
+import model.Customer;
 import model.Item;
+import model.Worker;
 
 public class CommonQuery {
 
@@ -23,4 +25,31 @@ public class CommonQuery {
 		return items;
 	}
 	
+	//search by code
+	public static Item searchItemByCode(String code){
+		ArrayList<Item> items = Query.getInstance().itemQuery("select * from "+Item.TABLE+" where "+Item.COLUMN_ITEM_CODE+" = '"+code+"';");
+		if (items.size() == 0)
+			//no matches
+			return null;
+		else
+			return items.get(0);
+	}
+	
+	//get all customers
+	public static ArrayList<Customer> getAllCustomer(){
+		return Query.getInstance().customerQuery("select * from " + Customer.TABLE + ";");
+	}
+	
+	public static Customer getCustomerWithId(int accountId){
+		ArrayList<Customer> customer = Query.getInstance().customerQuery("select * from " + Customer.TABLE + " where " + Customer.COLUMN_ACCOUNT_ID + " = " + accountId + ";");
+		if(customer.size() == 0)
+			return null;
+		else
+			return customer.get(0);
+	}
+	
+	//service worker
+	public static ArrayList<Worker> getWorkers(){
+		return Query.getInstance().workerQuery("select * from " + Worker.TABLE + ";");
+	}
 }
