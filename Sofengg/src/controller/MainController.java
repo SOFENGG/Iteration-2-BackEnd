@@ -31,6 +31,7 @@ public class MainController extends Controller {
 			case Code.MVC_CODE: scene.setRoot(mvc.getView(view));
 				break;
 		}
+		resetStage();
 	}
 	
 	public void passUser(int requestCode, User user){

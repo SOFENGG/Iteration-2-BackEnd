@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public class Worker {
 	
-	public static final String TABLE = "users";
+	public static final String TABLE = "workers";
 	public static final String COLUMN_WORKER_ID = "worker_id";
 	public static final String COLUMN_NAME = "name";
 	public static final String COLUMN_SALARY = "salary";

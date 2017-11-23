@@ -12,8 +12,6 @@ public abstract class Controller {
 	
 	public Controller (Stage stage) {
 		this.mainStage = stage;
-		mainStage.setMinWidth (1024);
-		mainStage.setMinHeight (720);
 		
 		scene = new Scene (new Group (), mainStage.getWidth (), mainStage.getHeight ());
 		initControllers ();
@@ -21,6 +19,7 @@ public abstract class Controller {
 		setScene (0,0);
 		
 		stage.setScene (scene);
+		stage.setResizable(false);
 		stage.show ();
 	}
 	
@@ -30,6 +29,15 @@ public abstract class Controller {
 	
 	public Stage getStage () {
 		return mainStage;
+	}
+	
+	public void resetStage(){
+		mainStage.hide();
+		mainStage.show();
+	}
+	
+	public void closeStage(){
+		mainStage.close();
 	}
 	
 }

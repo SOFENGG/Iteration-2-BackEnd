@@ -72,5 +72,9 @@ public class AlertBox {
 	public Stage getStage(){
 		return window;
 	}
-
+	
+	public void resetStage(){
+		window.hide();
+		window.show();
+	}
 }

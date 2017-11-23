@@ -54,8 +54,11 @@ public class LoginController {
 				changeControl (Code.MVC_CODE, Code.MANAGER_VIEW);
 			}
 			System.out.println("LOGGED IN");
-		} else 
-			new AlertBox("Wrong Password/and or Username");
+		} else {
+			AlertBox wrongInputError = new AlertBox("Authentication Error");
+			wrongInputError.initAlertContents("Wrong Password or Username");
+			wrongInputError.showBox();
+		}
 	}
 
 }

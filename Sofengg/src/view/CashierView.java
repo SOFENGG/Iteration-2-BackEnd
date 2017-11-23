@@ -23,7 +23,7 @@ public class CashierView extends GridPane implements View{
 	
 	private CustomerBox CustBox;
 	private NavigationBox NavBox;
-	//private TransactionBox TranBox;
+	private CartPane CartPane;
 	
 	public CashierView (CashierViewController cvc) {
 		super ();
@@ -36,18 +36,18 @@ public class CashierView extends GridPane implements View{
 		initCV ();
 		initHandlers ();
 		
-		getChildren().addAll(CustBox, NavBox);
+		getChildren().addAll(CustBox, NavBox, CartPane);
 		GridPane.setConstraints(logoView, 0, 0);
 		GridPane.setConstraints(CustBox, 1, 0);
 		GridPane.setConstraints(NavBox, 0, 1);
-		//GridPane.setConstraints(cartPane, 1, 1);
+		GridPane.setConstraints(CartPane, 1, 1);
 	}
 
 	private void initCV() {
 		initLogo ();
 		CustBox = new CustomerBox(cvc);	
 		NavBox = new NavigationBox(cvc);
-		//TranBox = new TransactionBox(cvc);
+		CartPane = new CartPane (cvc);
 	}
 
 	private void initLogo() {

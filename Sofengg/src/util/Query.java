@@ -108,7 +108,7 @@ public class Query {
 				Customer c = new Customer(rs.getInt(Customer.COLUMN_ACCOUNT_ID),
 										rs.getString(Customer.COLUMN_NAME), 
 										rs.getString(Customer.COLUMN_ADDRESS),
-										rs.getInt(Customer.COLUMN_CONTACT_NUMBER),
+										rs.getString(Customer.COLUMN_CONTACT_NUMBER),
 										rs.getInt(Customer.COLUMN_TOTAL_VISITS),
 										rs.getBigDecimal(Customer.COLUMN_DEBT),
 										rs.getBigDecimal(Customer.COLUMN_DEBT_LIMIT));

@@ -1,5 +1,6 @@
 package view;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import view.ExternalSearchInterface;
@@ -22,6 +23,10 @@ public class ExternalSearch extends AlertBox implements ExternalSearchInterface 
 	protected Image searchIcon = new Image(("search-icon.png"));
 	protected TextField searchField = new TextField();
 	protected Button searchButton = new Button();
+	
+	//Cancel Search Button
+	protected Button revertButton = new Button();
+	
 	protected ToggleGroup searchToggle = new ToggleGroup();
 	protected TableMaker searchTable;
 	
@@ -53,6 +58,9 @@ public class ExternalSearch extends AlertBox implements ExternalSearchInterface 
 		searchView.setFitWidth(15);	
 		searchButton.setGraphic(searchView);
 		
+		revertButton.setText("Revert Search");
+		
+		
 		/*
 		RadioButton itemRadio = new RadioButton("Item Code"),
 					descRadio = new RadioButton("Description");
@@ -69,6 +77,7 @@ public class ExternalSearch extends AlertBox implements ExternalSearchInterface 
 		initSearchAdder();
 		
 		promptBox.getChildren().add(searchTable.getTable());
+		promptBox.getChildren().add(revertButton);
 	}
 	
 
@@ -101,12 +110,12 @@ public class ExternalSearch extends AlertBox implements ExternalSearchInterface 
 			searchTable.addToSearch(itemCode, desc, qty, price, type);
 	}
 	
-	public void addToServiceSearch(int id, String name, double salary) {
+	public void addToServiceSearch(int id, String name, BigDecimal salary) {
 		searchTable.addToSearch(id, name, salary);
 	}
 	
-	public void addToCustomerSearch(int id, String name, String address, double debt, double limit) {
-		searchTable.addToSearch(id, name, address, debt, limit);
+	public void addToCustomerSearch(int id, String name, String address, String contactNumber, int totalVisits, BigDecimal debt, BigDecimal limit) {
+		searchTable.addToSearch(id, name, address, contactNumber, totalVisits, debt, limit);
 	}
 
 	private  void initGridConstraints() {

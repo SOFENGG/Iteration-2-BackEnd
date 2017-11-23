@@ -40,6 +40,7 @@ public class LoginView extends GridPane implements View{
 		GridPane.setConstraints(LabelPass, 0, 1);
 		GridPane.setConstraints(passwordField, 1, 1);
 		GridPane.setConstraints(LogInButton, 2, 1);
+		
 	}
 
 	private void initLogin() {
