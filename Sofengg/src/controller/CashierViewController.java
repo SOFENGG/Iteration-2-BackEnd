@@ -10,6 +10,7 @@ import java.util.Calendar;
 
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import model.Cart;
 import model.CartItem;
 import model.Customer;
 import model.Database;
@@ -31,12 +32,14 @@ public class CashierViewController {
 	private Customer customer;
 	
 	private ArrayList<CartItem> cartItems;
+	private ArrayList<Cart> cartBuffer;
 	
 	public CashierViewController (MainController mc) {
 		this.mc = mc;
 		cv = new CashierView (this);
 		
 		cartItems = new ArrayList<CartItem>();
+		cartBuffer = new ArrayList<Cart>();
 	}
 	
 	public Pane getView (int view) {
@@ -173,6 +176,20 @@ public class CashierViewController {
 			}
 		}
 		cartItems.clear();
+	}
+	
+	//hold/unhold cart methods - anj
+	public void holdCart(String transactionType) {
+		cartBuffer.add(new Cart(cartItems, transactionType));
+		cartItems.clear();
+	}
+	
+	public void restoreCart(int index) {
+		cartItems.clear();
+		cartItems = cartBuffer.get(index).getCartItems();
+		//set cart to either whole sale or retail sale (see CartPane commented out function) - anj
+		//CartPane.setWoR(cartBuffer.get(index).getTransactionType();
+		cartBuffer.remove(index);
 	}
 	
 	public void buyItems(String transactionType, boolean isloan){	

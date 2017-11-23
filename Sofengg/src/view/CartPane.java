@@ -193,6 +193,19 @@ public class CartPane extends TabPane implements View{
 				+ "-fx-font-weight: bold");
 	}
 	
+	//for setting the transaction type when restoring a held cart - anj
+	/*public void setWoR(String transactionType) {
+		if (transactionType.equals("WHOLE SALE")) {
+			WoRTab.setText("WHOLE SALE");
+    		TranBox.getChildren().set(0, ongoingWTable.getTable());
+		} else {
+			WoRTab.setText("RETAIL SALE");
+    		TranBox.getChildren().set(0, ongoingRTable.getTable());
+		}
+		changeCartCost();
+    	getSelectionModel().select(0);	
+	}*/
+	
 	public void clearAllTables(boolean logOut){
 		ongoingWTable.clearCart(logOut);
 		ongoingRTable.clearCart(logOut);
