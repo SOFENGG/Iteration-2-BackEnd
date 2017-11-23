@@ -14,11 +14,7 @@ public class ServiceWorker extends ExternalSearch {
 	public ServiceWorker(String title) {
 		super(title);
 		initSearchToggles();
-<<<<<<< HEAD
 		initServiceWorkers(CommonQuery.getWorkers());
-=======
-		initServiceWorkers();
->>>>>>> 2733030c2567a0a9e849f46560e86099438740d1
 		// TODO Auto-generated constructor stub
 	}
 
@@ -50,7 +46,6 @@ public class ServiceWorker extends ExternalSearch {
 		});
 	}
 
-<<<<<<< HEAD
 	public void initServiceWorkers(ArrayList<Worker> workers){
 		for(Worker w : workers){
 			addToServiceSearch(w.getWorkerID(), w.getName(), w.getSalary());
@@ -60,11 +55,4 @@ public class ServiceWorker extends ExternalSearch {
 	public void initServiceWorkers(Worker w){
 		addToServiceSearch(w.getWorkerID(), w.getName(), w.getSalary());
 	}
-=======
-	public void initServiceWorkers(){
-		for(Worker w : CommonQuery.getWorkers()){
-			addToServiceSearch(w.getWorkerID(), w.getName(), w.getSalary());
-		}
-	}
->>>>>>> 2733030c2567a0a9e849f46560e86099438740d1
 }

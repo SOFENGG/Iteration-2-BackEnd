@@ -197,22 +197,14 @@ public class TableMaker {
 	private void initColumnChangeCustomerSearch() {
 		column = new TableColumn<>("ID");
 		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(0)));
-<<<<<<< HEAD
 		column.prefWidthProperty().bind(TableHolder.widthProperty().multiply(0.14));
-=======
-		column.prefWidthProperty().bind(TableHolder.widthProperty().divide(11));
->>>>>>> 2733030c2567a0a9e849f46560e86099438740d1
 		column.setStyle("-fx-alignment: CENTER;");
 		column.setResizable(false);
 		Table.getColumns().add(column);
 		
 		column = new TableColumn<>("NAME");
 		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(1)));
-<<<<<<< HEAD
 		column.prefWidthProperty().bind(TableHolder.widthProperty().multiply(0.14));
-=======
-		column.prefWidthProperty().bind(TableHolder.widthProperty().divide(6));
->>>>>>> 2733030c2567a0a9e849f46560e86099438740d1
 		column.setStyle("-fx-alignment: CENTER;");
 		column.setResizable(false);
 		Table.getColumns().add(column);
@@ -226,30 +218,11 @@ public class TableMaker {
 		
 		column = new TableColumn<>("CONTACT NUMBER");
 		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(3)));
-<<<<<<< HEAD
 		column.prefWidthProperty().bind(TableHolder.widthProperty().multiply(0.14));
-=======
-		column.prefWidthProperty().bind(TableHolder.widthProperty().divide(6));
 		column.setStyle("-fx-alignment: CENTER;");
 		column.setResizable(false);
 		Table.getColumns().add(column);
 		
-		column = new TableColumn<>("TOTAL VISITS");
-		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(4)));
-		column.prefWidthProperty().bind(TableHolder.widthProperty().divide(6));
-		column.setStyle("-fx-alignment: CENTER;");
-		column.setResizable(false);
-		Table.getColumns().add(column);
-		
-		column = new TableColumn<>("DEBT");
-		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(5)));
-		column.prefWidthProperty().bind(TableHolder.widthProperty().divide(5.5));
->>>>>>> 2733030c2567a0a9e849f46560e86099438740d1
-		column.setStyle("-fx-alignment: CENTER;");
-		column.setResizable(false);
-		Table.getColumns().add(column);
-		
-<<<<<<< HEAD
 		column = new TableColumn<>("TOTAL VISITS");
 		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(4)));
 		column.prefWidthProperty().bind(TableHolder.widthProperty().multiply(0.14));
@@ -267,11 +240,6 @@ public class TableMaker {
 		column = new TableColumn<>("LIMIT");
 		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(6)));
 		column.prefWidthProperty().bind(TableHolder.widthProperty().multiply(0.14));
-=======
-		column = new TableColumn<>("LIMIT");
-		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(6)));
-		column.prefWidthProperty().bind(TableHolder.widthProperty().divide(5.5));
->>>>>>> 2733030c2567a0a9e849f46560e86099438740d1
 		column.setStyle("-fx-alignment: CENTER;");
 		column.setResizable(false);
 		Table.getColumns().add(column);
