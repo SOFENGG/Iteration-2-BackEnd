@@ -12,7 +12,11 @@ public class SelectCustomer extends ExternalSearch {
 	public SelectCustomer(String title) {
 		super(title);
 		initSearchToggles();
+<<<<<<< HEAD
 		initCustomers(CommonQuery.getAllCustomer());
+=======
+		initCustomers();
+>>>>>>> 2733030c2567a0a9e849f46560e86099438740d1
 	}
 	
 	@Override
@@ -60,6 +64,12 @@ public class SelectCustomer extends ExternalSearch {
 	
 	public void initCustomers(Customer c){
 		addToCustomerSearch(c.getAccount_id(), c.getName(), c.getAddress(), c.getContactNumber(), c.getTotalVisits(), c.getDebt(), c.getDebt_limit());
+	}
+	
+	public void initCustomers(){
+		for(Customer c : CommonQuery.getAllCustomer()){
+			addToCustomerSearch(c.getAccount_id(), c.getName(), c.getAddress(), c.getContactNumber(), c.getTotalVisits(), c.getDebt(), c.getDebt_limit());
+		}
 	}
 
 }
