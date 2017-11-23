@@ -3,13 +3,15 @@ package view;
 import view.ExternalSearch;
 import javafx.scene.control.RadioButton;
 import javafx.scene.layout.HBox;
+import model.Customer;
+import util.CommonQuery;
 
 public class SelectCustomer extends ExternalSearch {
 
 	public SelectCustomer(String title) {
 		super(title);
 		initSearchToggles();
-		addToCustomerSearch(1, "Jarod Martinez", "Makati", 1000, 2000);
+		initCustomers();
 	}
 	
 	@Override
@@ -29,6 +31,12 @@ public class SelectCustomer extends ExternalSearch {
 		 */
 		HBox searchBox = (HBox) promptBox.getChildren().get(0);			
 		searchBox.getChildren().addAll(idRadio, nameRadio, addressRadio, debtRadio);
+	}
+	
+	public void initCustomers(){
+		for(Customer c : CommonQuery.getAllCustomer()){
+			addToCustomerSearch(c.getAccount_id(), c.getName(), c.getAddress(), c.getContactNumber(), c.getTotalVisits(), c.getDebt(), c.getDebt_limit());
+		}
 	}
 
 }

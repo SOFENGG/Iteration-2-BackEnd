@@ -1,5 +1,7 @@
 package view;
 
+import java.math.BigDecimal;
+
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -195,14 +197,14 @@ public class TableMaker {
 	private void initColumnChangeCustomerSearch() {
 		column = new TableColumn<>("ID");
 		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(0)));
-		column.prefWidthProperty().bind(TableHolder.widthProperty().divide(10.3));
+		column.prefWidthProperty().bind(TableHolder.widthProperty().divide(11));
 		column.setStyle("-fx-alignment: CENTER;");
 		column.setResizable(false);
 		Table.getColumns().add(column);
 		
 		column = new TableColumn<>("NAME");
 		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(1)));
-		column.prefWidthProperty().bind(TableHolder.widthProperty().divide(4));
+		column.prefWidthProperty().bind(TableHolder.widthProperty().divide(6));
 		column.setStyle("-fx-alignment: CENTER;");
 		column.setResizable(false);
 		Table.getColumns().add(column);
@@ -214,15 +216,29 @@ public class TableMaker {
 		column.setResizable(false);
 		Table.getColumns().add(column);
 		
-		column = new TableColumn<>("DEBT");
+		column = new TableColumn<>("CONTACT NUMBER");
 		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(3)));
+		column.prefWidthProperty().bind(TableHolder.widthProperty().divide(6));
+		column.setStyle("-fx-alignment: CENTER;");
+		column.setResizable(false);
+		Table.getColumns().add(column);
+		
+		column = new TableColumn<>("TOTAL VISITS");
+		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(4)));
+		column.prefWidthProperty().bind(TableHolder.widthProperty().divide(6));
+		column.setStyle("-fx-alignment: CENTER;");
+		column.setResizable(false);
+		Table.getColumns().add(column);
+		
+		column = new TableColumn<>("DEBT");
+		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(5)));
 		column.prefWidthProperty().bind(TableHolder.widthProperty().divide(5.5));
 		column.setStyle("-fx-alignment: CENTER;");
 		column.setResizable(false);
 		Table.getColumns().add(column);
 		
 		column = new TableColumn<>("LIMIT");
-		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(4)));
+		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(6)));
 		column.prefWidthProperty().bind(TableHolder.widthProperty().divide(5.5));
 		column.setStyle("-fx-alignment: CENTER;");
 		column.setResizable(false);
@@ -248,15 +264,15 @@ public class TableMaker {
 		Table.getItems().add(FXCollections.observableArrayList(row));
 	}
 	
-	public void addToSearch(int id, String name, double salary) {
+	public void addToSearch(int id, String name, BigDecimal salary) {
 		ObservableList<String> row = FXCollections.observableArrayList();
-		row.addAll(Integer.toString(id), name, "P" + Double.toString(salary));
+		row.addAll(Integer.toString(id), name, "P" + salary.toString());
 		Table.getItems().add(FXCollections.observableArrayList(row));
 	}
 	
-	public void addToSearch(int id, String name, String address, double debt, double limit) {
+	public void addToSearch(int id, String name, String address, String contactNumber, int totalVisits, BigDecimal debt, BigDecimal limit) {
 		ObservableList<String> row = FXCollections.observableArrayList();
-		row.addAll(Integer.toString(id), name, address, Double.toString(debt), Double.toString(limit));
+		row.addAll(Integer.toString(id), name, address, contactNumber, Integer.toString(totalVisits), debt.toString(), limit.toString());
 		Table.getItems().add(FXCollections.observableArrayList(row));
 	}
 	
@@ -272,9 +288,9 @@ public class TableMaker {
 		Table.getItems().set(id, FXCollections.observableArrayList(row));
 	}
 	
-	public void updateSearch(int id, String name, String address, double debt, double limit) {
+	public void updateSearch(int id, String name, String address, String contactNumber, int totalVisits, BigDecimal debt, BigDecimal limit) {
 		ObservableList<String> row = FXCollections.observableArrayList();
-		row.addAll(Integer.toString(id), name, address, Double.toString(debt), Double.toString(limit));
+		row.addAll(Integer.toString(id), name, address, contactNumber, Integer.toString(totalVisits), debt.toString(), limit.toString());
 		Table.getItems().set(id,  FXCollections.observableArrayList(row));
 	}
 	

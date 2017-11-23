@@ -1,5 +1,6 @@
 package view;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import view.ExternalSearchInterface;
@@ -101,12 +102,12 @@ public class ExternalSearch extends AlertBox implements ExternalSearchInterface 
 			searchTable.addToSearch(itemCode, desc, qty, price, type);
 	}
 	
-	public void addToServiceSearch(int id, String name, double salary) {
+	public void addToServiceSearch(int id, String name, BigDecimal salary) {
 		searchTable.addToSearch(id, name, salary);
 	}
 	
-	public void addToCustomerSearch(int id, String name, String address, double debt, double limit) {
-		searchTable.addToSearch(id, name, address, debt, limit);
+	public void addToCustomerSearch(int id, String name, String address, String contactNumber, int totalVisits, BigDecimal debt, BigDecimal limit) {
+		searchTable.addToSearch(id, name, address, contactNumber, totalVisits, debt, limit);
 	}
 
 	private  void initGridConstraints() {

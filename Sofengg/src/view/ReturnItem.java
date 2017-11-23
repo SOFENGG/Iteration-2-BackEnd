@@ -9,7 +9,6 @@ public class ReturnItem extends ExternalSearch{
 	public ReturnItem(String title) {
 		super(title);
 		initSearchToggles();
-		addToReturnSearch("1010101", "gass and stuff", 2, 300, "RETAIL SALE");
 	}
 
 	@Override

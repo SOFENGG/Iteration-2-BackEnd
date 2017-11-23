@@ -1,5 +1,6 @@
 package view;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import view.ExternalSearch;
@@ -102,24 +103,24 @@ public class CustomerBox extends HBox implements View {
 		esf = new ExternalSearchFactory();
 		
 		custCButton.setOnAction(e -> {
-			System.out.println(custCButton.getText());
 			es = esf.getExternalSearch(custCButton.getText());
 			returnedRow = es.runWindow();
 			if (returnedRow != null)
-				setCustomerLabels(returnedRow.get(1), returnedRow.get(2), Double.parseDouble(returnedRow.get(3)), Double.parseDouble(returnedRow.get(4)));
+				setCustomerLabels(returnedRow.get(1), returnedRow.get(2), BigDecimal.valueOf(Double.parseDouble(returnedRow.get(5))), BigDecimal.valueOf(Double.parseDouble(returnedRow.get(6))));
 		});
 		
 		custRButton.setOnAction(e -> {
-			if(!cLabels[1].getText().equals("Customer: None"))
-				setCustomerLabels("None", "N/A", 0, 0);
+			cvc.removeCustomer();
+			if(cvc.getCustomer() == null)
+				setCustomerLabels("None", "N/A", BigDecimal.valueOf(0), BigDecimal.valueOf(0));
 		});
 	}
 	
-	public void setCustomerLabels(String name, String address, double debt, double limit){
+	public void setCustomerLabels(String name, String address, BigDecimal debt, BigDecimal limit){
 		cLabels[1].setText("Customer: " + name);
 		cLabels[2].setText("Address: " + address);
-		cLabels[3].setText("Debt: " + debt);
-		cLabels[4].setText("Limit: " + limit);
+		cLabels[3].setText("Debt: " + debt.toString());
+		cLabels[4].setText("Limit: " + limit.toString());
 	}
 
 	@Override

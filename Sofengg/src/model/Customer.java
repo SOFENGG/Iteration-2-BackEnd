@@ -15,12 +15,12 @@ public class Customer {
 	private int account_id;
 	private String name;
 	private String address;
-	private int contactNumber;
+	private String contactNumber;
 	private int totalVisits;
 	private BigDecimal debt;
 	private BigDecimal debt_limit;
 	
-	public Customer(int account_id, String name, String address, int contactNumber, int totalVisits, BigDecimal debt,
+	public Customer(int account_id, String name, String address, String contactNumber, int totalVisits, BigDecimal debt,
 			BigDecimal debt_limit) {
 		this.account_id = account_id;
 		this.name = name;
@@ -43,7 +43,7 @@ public class Customer {
 		return address;
 	}
 
-	public int getContactNumber() {
+	public String getContactNumber() {
 		return contactNumber;
 	}
 

@@ -95,6 +95,10 @@ public class NavigationBox extends VBox implements View{
 			OverridePricePrompt opp = new OverridePricePrompt("Override Price");
 			opp.runWindow();
 		});
+		
+		logOutB.setOnAction(e -> {
+			cvc.logout();
+		});
 	}
 
 	@Override

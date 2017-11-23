@@ -26,7 +26,7 @@ CREATE TABLE `customers` (
   `account_id` int(11) NOT NULL,
   `name` varchar(45) NOT NULL,
   `address` varchar(45) NOT NULL,
-  `contact_number` int(11) NOT NULL,
+  `contact_number` varchar(45) NOT NULL,
   `total_visits` int(11) NOT NULL,
   `debt` decimal(19,4) DEFAULT NULL,
   `debt_limit` decimal(19,4) DEFAULT NULL,
@@ -41,6 +41,7 @@ CREATE TABLE `customers` (
 
 LOCK TABLES `customers` WRITE;
 /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
+INSERT INTO `customers` VALUES (1,'jarod','makati','12310312',3,9999.0000,20000.0000),(2,'tim','manila','09173352933',4,50000.0000,50000.0000);
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -114,10 +115,11 @@ DROP TABLE IF EXISTS `service_log`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `service_log` (
-  `service_id` int(11) NOT NULL AUTO_INCREMENT,
+  `service_log_id` int(11) NOT NULL AUTO_INCREMENT,
+  `service_id` int(11) NOT NULL,
   `worker_id` int(11) NOT NULL,
   `date` date NOT NULL,
-  PRIMARY KEY (`service_id`)
+  PRIMARY KEY (`service_log_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -233,7 +235,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Angelo','angelo','1234','2'),(4,'Anj','anj','1234','1');
+INSERT INTO `users` VALUES (1,'Angelo','angelo','123456','2'),(4,'Anj','anj','1234','1');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -271,4 +273,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-11-22 21:06:07
+-- Dump completed on 2017-11-23  9:59:22

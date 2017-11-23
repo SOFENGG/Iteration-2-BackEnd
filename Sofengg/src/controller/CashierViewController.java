@@ -68,6 +68,10 @@ public class CashierViewController {
 		changeControl(Code.LC_CODE, Code.LOGIN_VIEW);
 	}
 	
+	public Customer getCustomer(){
+		return customer;
+	}
+	
 	//cashier view services
 	
 	//manager access -> called when action requires manager password
@@ -236,9 +240,7 @@ public class CashierViewController {
 		}
 		
 		if(isloan){
-			
-			
-			
+			//insert into customer debt
 		}
 		
 		cartItems.clear();
