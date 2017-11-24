@@ -93,7 +93,7 @@ public class ExternalSearch extends AlertBox implements ExternalSearchInterface 
 		});
 	}
 	
-	public void addToReturnSearch(String itemCode, String desc, int qty, double price, String type){
+	public void addToReturnSearch(String itemCode, String name, String desc, String category, String manufacturer, int qty, BigDecimal price){
 		ObservableList<String> selected;
 		boolean found = false;
 		for(int x = 0; x<searchTable.getRawTable().getItems().size(); x++){
@@ -101,13 +101,13 @@ public class ExternalSearch extends AlertBox implements ExternalSearchInterface 
 			if(selected.get(0).equals(itemCode)){
 				int oldQty = Integer.parseInt(selected.get(2));
 				qty += oldQty;
-				searchTable.updateSearch(x, itemCode, desc, qty, price);
+				searchTable.updateSearch(x, itemCode, name, desc, category, manufacturer, qty, price);
 				found = true;
 				
 			}
 		}
 		if(!found)
-			searchTable.addToSearch(itemCode, desc, qty, price, type);
+			searchTable.addToSearch(itemCode, name, desc, category, manufacturer, qty, price);
 	}
 	
 	public void addToServiceSearch(int id, String name, BigDecimal salary) {

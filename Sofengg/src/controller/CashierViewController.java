@@ -75,6 +75,10 @@ public class CashierViewController {
 		return customer;
 	}
 	
+	public ArrayList<CartItem> getCartItems(){
+		return cartItems;
+	}
+	
 	//cashier view services
 	
 	//manager access -> called when action requires manager password
@@ -114,7 +118,7 @@ public class CashierViewController {
 	
 	//override price
 	public void overridePrice(CartItem c, BigDecimal newPrice){
-		c.setPriceSold(newPrice.multiply(BigDecimal.valueOf(c.getQuantity())));
+		c.setPriceSold(newPrice);
 	}
 	
 	//insert servicelog
@@ -140,11 +144,11 @@ public class CashierViewController {
 	
 	//<-- transaction functions -->
 	
-	public boolean addToCart(String itemCode, BigDecimal price, int quantity){
+	public boolean addToCart(String itemCode, String name, BigDecimal price, int quantity){
 		String updateReserved = "update " + Item.TABLE + 
-						" set " + Item.COLUMN_RESERVED + " =  " + Item.COLUMN_RESERVED + " + (" + Item.COLUMN_STOCK + " - ?)" + 
-						" where " + Item.COLUMN_ITEM_CODE + " = '?' and " + Item.COLUMN_STOCK + " - " + Item.COLUMN_RESERVED + "  >= ?";
-		
+						" set " + Item.COLUMN_RESERVED + " =  " + Item.COLUMN_RESERVED + " + ? " + 
+						" where " + Item.COLUMN_ITEM_CODE + " = ? and " + Item.COLUMN_STOCK + " - " + Item.COLUMN_RESERVED + "  >= ? ;";
+		boolean found = false;
 		try {
 			PreparedStatement ps = Database.getInstance().getConnection().prepareStatement(updateReserved);
 			ps.setInt(1, quantity);
@@ -156,14 +160,21 @@ public class CashierViewController {
 			e.printStackTrace();
 		}
 		
-		cartItems.add(new CartItem(itemCode, price.multiply(BigDecimal.valueOf(quantity)), quantity));
+		for(CartItem item : cartItems){
+			if(item.getItemCode() == itemCode){
+				item.setQuantity(item.getQuantity() + quantity);
+				found = true;
+			}
+		}
+		if(!found)
+			cartItems.add(new CartItem(itemCode, name, price, quantity));
 		return true;
 	}
 	
 	public void clearCart(){
 		String updateReserved = "update " + Item.TABLE + 
 								" set " + Item.COLUMN_RESERVED + " = " + Item.COLUMN_RESERVED + " - ?" + 
-								" where " + Item.COLUMN_ITEM_CODE + " = '?'";
+								" where " + Item.COLUMN_ITEM_CODE + " = ?";
 		
 		for(CartItem ci : cartItems){
 			try {
@@ -176,6 +187,33 @@ public class CashierViewController {
 			}
 		}
 		cartItems.clear();
+	}
+	
+	public void removeCartItem(String itemCode, int quantity){
+		String updateReserved = "update " + Item.TABLE + 
+								" set " + Item.COLUMN_RESERVED + " = " + Item.COLUMN_RESERVED + " - ?" + 
+								" where " + Item.COLUMN_ITEM_CODE + " = ?";
+		
+		CartItem ci = null;
+		
+		for(CartItem item : cartItems){
+			if(item.getItemCode().equals(itemCode))
+				ci = item;
+		}
+		
+		try {
+			PreparedStatement ps = Database.getInstance().getConnection().prepareStatement(updateReserved);
+			ps.setInt(1, quantity);
+			ps.setString(2, ci.getItemCode());
+			Database.getInstance().executeUpdate(ps);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		if(ci.getQuantity() - quantity <= 0)
+			cartItems.remove(ci);
+		else
+			ci.setQuantity(ci.getQuantity() - quantity);
 	}
 	
 	//hold/unhold cart methods - anj
@@ -201,7 +239,8 @@ public class CashierViewController {
 		
 		String updateReserved = "update " + Item.TABLE + 
 								" set " + Item.COLUMN_RESERVED + " = " + Item.COLUMN_RESERVED + " - ?"+
-								" where " + Item.COLUMN_ITEM_CODE + " = '?'";
+								", " + Item.COLUMN_STOCK + " = " + Item.COLUMN_STOCK + " - ?"+
+								" where " + Item.COLUMN_ITEM_CODE + " = ?";
 		
 		String transaction = "insert into " + Transaction.TABLE + " (" + Transaction.COLUMN_TRANSACTION_ID+ 
 																	", " + Transaction.COLUMN_USER_ID + 
@@ -223,17 +262,18 @@ public class CashierViewController {
 				log.setString(1, ci.getItemCode());
 				log.setInt(2, transactionId);
 				log.setInt(3, ci.getQuantity());
-				log.setBigDecimal(4, ci.getOriginalPrice());
-				log.setBigDecimal(5, ci.getPriceSold());
+				log.setBigDecimal(4, ci.getOriginalPrice().multiply(BigDecimal.valueOf(ci.getQuantity())));
+				log.setBigDecimal(5, ci.getPriceSold().multiply(BigDecimal.valueOf(ci.getQuantity())));
 				
 				//update item reserved
 				PreparedStatement reserved = Database.getInstance().getConnection().prepareStatement(updateReserved); 
 				reserved.setInt(1, ci.getQuantity());
-				reserved.setString(2, ci.getItemCode());
+				reserved.setInt(2, ci.getQuantity());
+				reserved.setString(3, ci.getItemCode());
 				
 				//calculates for total price of whole cart
-				totalPrice.add(ci.getPriceSold());
-				
+				totalPrice = totalPrice.add(ci.getPriceSold());
+					
 				Database.getInstance().executeUpdate(log);
 				Database.getInstance().executeUpdate(reserved);
 				
@@ -249,8 +289,8 @@ public class CashierViewController {
 			ps.setInt(2, cashier.getID());
 			ps.setString(3, transactionType);
 			ps.setBoolean(4, isloan);
-			ps.setBigDecimal(5, totalPrice);
-			ps.setDate(6, today);
+			ps.setDate(5, today);
+			ps.setBigDecimal(6, totalPrice);
 			Database.getInstance().executeUpdate(ps);
 		} catch (SQLException e) {
 			e.printStackTrace();

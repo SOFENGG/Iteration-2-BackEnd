@@ -1,6 +1,7 @@
 package view;
 
 import view.AlertBox;
+import controller.CashierViewController;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -16,10 +17,17 @@ public class CheckoutDebt extends AlertBox {
 	private double totalPrice;
 	private int userID;
 	
-	public CheckoutDebt(String title, double totalPrice, int userID) {
+	private CashierViewController cvc;
+	
+	private String transactionType;
+	private CallbackListener callbackListener;
+	
+	public CheckoutDebt(String title, String transactionType, double totalPrice, int userID, CashierViewController cvc) {
 		super(title);
+		this.transactionType = transactionType;
 		this.totalPrice = totalPrice;
 		this.userID = userID;
+		this.cvc = cvc;
 		initPasswordField();
 		initButtons();
 		initGridConstraints();
@@ -63,7 +71,11 @@ public class CheckoutDebt extends AlertBox {
 					a.showAndWait();
 					closeBox();
 					// TRANSACT
+					cvc.buyItems(transactionType, true);
+					
 					// CLEAR CART
+					callbackListener.checkout();
+					
 					// PROCESS USER DEBT
 				} else {
 					a.setAlertType(AlertType.ERROR);
@@ -94,6 +106,10 @@ public class CheckoutDebt extends AlertBox {
 	
 	private void addToGrid() {
 		getGrid().getChildren().addAll(promptBox);
+	}
+	
+	public void setCheckoutListener(CallbackListener callbackListener){
+		this.callbackListener = callbackListener;
 	}
 }
 	

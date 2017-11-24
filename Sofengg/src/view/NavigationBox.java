@@ -21,6 +21,8 @@ public class NavigationBox extends VBox implements View{
 	
 	private ExternalSearchFactory esf;
 	
+	private CallbackListener callbackListener;
+	
 	public NavigationBox (CashierViewController cvc) {
 		super ();
 		this.cvc = cvc;
@@ -92,7 +94,8 @@ public class NavigationBox extends VBox implements View{
 		});
 		
 		overridePriceB.setOnAction(e -> {
-			OverridePricePrompt opp = new OverridePricePrompt("Override Price");
+			OverridePricePrompt opp = new OverridePricePrompt("Override Price", cvc);
+			opp.setCallbackListener(callbackListener);
 			opp.runWindow();
 		});
 		
@@ -104,6 +107,10 @@ public class NavigationBox extends VBox implements View{
 	@Override
 	public void update () {
 		
+	}
+	
+	public void setCallbackListener(CallbackListener callbackListener){
+		this.callbackListener = callbackListener;
 	}
 	
 }

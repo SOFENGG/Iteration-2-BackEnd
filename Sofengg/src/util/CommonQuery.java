@@ -26,13 +26,9 @@ public class CommonQuery {
 	}
 	
 	//search by code
-	public static Item searchItemByCode(String code){
+	public static ArrayList<Item> searchItemByCode(String code){
 		ArrayList<Item> items = Query.getInstance().itemQuery("select * from "+Item.TABLE+" where "+Item.COLUMN_ITEM_CODE+" = '"+code+"';");
-		if (items.size() == 0)
-			//no matches
-			return null;
-		else
-			return items.get(0);
+		return items;
 	}
 	
 	//get all customers

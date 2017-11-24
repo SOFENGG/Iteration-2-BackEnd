@@ -1,6 +1,7 @@
 package view;
 
 import view.AlertBox;
+import controller.CashierViewController;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -14,10 +15,17 @@ public class CheckoutCashout extends AlertBox {
 	
 	private VBox promptBox;
 	private double totalPrice;
+	private CashierViewController cvc;
 	
-	public CheckoutCashout(String title, double totalPrice) {
+	private String transactionType; 
+	
+	private CallbackListener callbackListener;
+	
+	public CheckoutCashout(String title, String transactionType, double totalPrice, CashierViewController cvc) {
 		super(title);
+		this.transactionType = transactionType;
 		this.totalPrice = totalPrice;
+		this.cvc = cvc;
 		initInputAmt();
 		initButtons();
 		initGridConstraints();
@@ -46,8 +54,10 @@ public class CheckoutCashout extends AlertBox {
 		okButton.setOnAction(e -> {
 			double cashReceived = 0.0;
 			boolean isValidNumber = isDouble(amtField.getText());
+			
 			if (isValidNumber)
 				cashReceived = Double.parseDouble(amtField.getText());
+			
 			if (isValidNumber) {
 				double change = cashReceived - totalPrice;
 				if (change >= 0) {
@@ -57,7 +67,11 @@ public class CheckoutCashout extends AlertBox {
 					a.showAndWait();
 					closeBox();
 					// TRANSACT
+					cvc.buyItems(transactionType, false);
+					
 					// CLEAR THE CART
+					callbackListener.checkout();
+					
 				} else {
 					Alert a = new Alert(AlertType.ERROR);
 					a.setTitle("Error");
@@ -96,6 +110,10 @@ public class CheckoutCashout extends AlertBox {
 		} catch (Exception e) {
 			return false;
 		}
+	}
+	
+	public void setCheckoutListener(CallbackListener callbackListener){
+		this.callbackListener = callbackListener;
 	}
 	
 }

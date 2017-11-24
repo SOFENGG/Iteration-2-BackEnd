@@ -3,6 +3,7 @@ package view;
 import view.AlertBox;
 import view.CheckoutCashout;
 import view.CheckoutDebt;
+import controller.CashierViewController;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -15,10 +16,18 @@ public class CheckoutPrompt extends AlertBox {
 	private double totalPrice;
 	private int userID;
 	
-	public CheckoutPrompt(String title, double totalPrice, int userID) {
+	private CashierViewController cvc;
+	
+	private String transactionType;
+	
+	private CallbackListener callbackListener;
+	
+	public CheckoutPrompt(String title, String transactionType, double totalPrice, int userID, CashierViewController cvc) {
 		super(title);
 		this.totalPrice = totalPrice;
+		this.transactionType = transactionType;
 		this.userID = userID;
+		this.cvc = cvc;
 		initButtons();
 		initGridConstraints();
 		addToGrid();
@@ -41,16 +50,18 @@ public class CheckoutPrompt extends AlertBox {
 		// button listeners
 		// cash out button, always selectable
 		cashOutButton.setOnAction(e -> {
-			CheckoutCashout cc = new CheckoutCashout("Checkout", totalPrice);
+			CheckoutCashout cc = new CheckoutCashout("Checkout", transactionType, totalPrice, cvc);
+			cc.setCheckoutListener(callbackListener);
 			cc.showBox();
 			closeBox();
 		});
 		
-		// debt button, if no user (id = 0), disabled
-		if (userID != 0) {
+		// debt button, if no user (id = -1), disabled
+		if (userID != -1) {
 			debtButton.setDisable(false);
 			debtButton.setOnAction(e -> {
-				CheckoutDebt cd = new CheckoutDebt("Debt", totalPrice, userID);
+				CheckoutDebt cd = new CheckoutDebt("Debt", transactionType, totalPrice, userID, cvc);
+				cd.setCheckoutListener(callbackListener);
 				cd.showBox();
 				closeBox();
 			});
@@ -70,5 +81,9 @@ public class CheckoutPrompt extends AlertBox {
 	
 	private void addToGrid() {
 		getGrid().getChildren().addAll(buttonBox);
+	}
+	
+	public void setCheckoutListener(CallbackListener callbackListener){
+		this.callbackListener = callbackListener;
 	}
 }

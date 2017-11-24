@@ -68,8 +68,8 @@ public class CashierPrompts extends AlertBox{
 			price = Double.parseDouble(selected.get(4).substring(1));
 		}
 		else if(title.equals("Add")){
-			qty = Integer.parseInt(selected.get(2));
-			price = Double.parseDouble(selected.get(3).substring(1));
+			qty = Integer.parseInt(selected.get(5));
+			price = Double.parseDouble(selected.get(6).substring(1));
 		}
 		
 		valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, qty, 1);

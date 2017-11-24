@@ -1,4 +1,4 @@
-package view;
+	package view;
 
 import java.util.ArrayList;
 
@@ -36,6 +36,7 @@ public class SelectCustomer extends ExternalSearch {
 		HBox searchBox = (HBox) promptBox.getChildren().get(0);			
 		searchBox.getChildren().addAll(idRadio, nameRadio, addressRadio);
 		
+		
 		searchButton.setOnAction(e -> {
 			switch(searchToggle.getSelectedToggle().getUserData().toString()){
 			case "ID": searchTable.reset();
@@ -48,6 +49,11 @@ public class SelectCustomer extends ExternalSearch {
 				initCustomers(CommonQuery.getCustomerWithAddress(searchField.getText()));
 				break;
 			}
+		});
+		
+		revertButton.setOnAction(e -> {
+			searchTable.reset();
+			initCustomers(CommonQuery.getAllCustomer());
 		});
 		
 	}

@@ -1,6 +1,8 @@
 package view;
 
 import java.math.BigDecimal;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
@@ -107,7 +109,7 @@ public class TableMaker {
 		column.setResizable(false);
 		Table.getColumns().add(column);
 		
-		column = new TableColumn<>("DESC");
+		column = new TableColumn<>("NAME");
 		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(2)));
 		column.prefWidthProperty().bind(TableHolder.widthProperty().multiply(0.31));
 		column.setResizable(false);
@@ -120,15 +122,15 @@ public class TableMaker {
 		column.setResizable(false);
 		Table.getColumns().add(column);
 		
-		column = new TableColumn<>("PRICE");
+		column = new TableColumn<>("UNIT PRICE");
 		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(4)));
 		column.prefWidthProperty().bind(TableHolder.widthProperty().multiply(0.17));
 		column.setStyle("-fx-alignment: CENTER;");
 		column.setResizable(false);
 		Table.getColumns().add(column);
 		
-		column = new TableColumn<>("Ex Price");
-		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(4)));
+		column = new TableColumn<>("TOTAL PRICE");
+		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(5)));
 		column.prefWidthProperty().bind(TableHolder.widthProperty().multiply(0.17));
 		column.setStyle("-fx-alignment: CENTER;");
 		column.setResizable(false);
@@ -138,37 +140,49 @@ public class TableMaker {
 	private void initColumnSearch(){
 		column = new TableColumn<>("ITEM CODE");
 		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(0)));
-		column.prefWidthProperty().bind(TableHolder.widthProperty().multiply(0.20));
+		column.prefWidthProperty().bind(TableHolder.widthProperty().multiply(0.14));
 		column.setStyle("-fx-alignment: CENTER;");
 		column.setResizable(false);
 		Table.getColumns().add(column);
 		
-		column = new TableColumn<>("DESC");
+		column = new TableColumn<>("NAME");
 		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(1)));
-		column.prefWidthProperty().bind(TableHolder.widthProperty().multiply(0.26));
+		column.prefWidthProperty().bind(TableHolder.widthProperty().multiply(0.14));
 		column.setResizable(false);
 		Table.getColumns().add(column);
 		
-		column = new TableColumn<>("QTY");
+		column = new TableColumn<>("DESC");
 		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(2)));
-		column.prefWidthProperty().bind(TableHolder.widthProperty().multiply(0.10));
+		column.prefWidthProperty().bind(TableHolder.widthProperty().multiply(0.14));
+		column.setResizable(false);
+		Table.getColumns().add(column);
+		
+		column = new TableColumn<>("CATEGORY");
+		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(3)));
+		column.prefWidthProperty().bind(TableHolder.widthProperty().multiply(0.14));
+		column.setResizable(false);
+		Table.getColumns().add(column);
+		
+		column = new TableColumn<>("MANUFACTURER");
+		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(4)));
+		column.prefWidthProperty().bind(TableHolder.widthProperty().multiply(0.14));
+		column.setResizable(false);
+		Table.getColumns().add(column);
+		
+		column = new TableColumn<>("STOCK");
+		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(5)));
+		column.prefWidthProperty().bind(TableHolder.widthProperty().multiply(0.14));
 		column.setStyle("-fx-alignment: CENTER;");
 		column.setResizable(false);
 		Table.getColumns().add(column);
 		
 		column = new TableColumn<>("PRICE");
-		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(3)));
-		column.prefWidthProperty().bind(TableHolder.widthProperty().multiply(0.20));
+		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(6)));
+		column.prefWidthProperty().bind(TableHolder.widthProperty().multiply(0.14));
 		column.setStyle("-fx-alignment: CENTER;");
 		column.setResizable(false);
 		Table.getColumns().add(column);
 		
-		column = new TableColumn<>("Ex Price");
-		column.setCellValueFactory(param ->new ReadOnlyObjectWrapper<>(param.getValue().get(4)));
-		column.prefWidthProperty().bind(TableHolder.widthProperty().multiply(0.20));
-		column.setStyle("-fx-alignment: CENTER;");
-		column.setResizable(false);
-		Table.getColumns().add(column);
 	}
 	
 	private void initColumnServiceWorkerSearch() {
@@ -245,22 +259,22 @@ public class TableMaker {
 		Table.getColumns().add(column);
 	}
 	
-	public void addToCart(String itemCode, String desc, int qty, double price){
+	public void addToCart(String itemCode, String name, int qty, BigDecimal price){
 		int id = Table.getItems().size() + 1;
-		ObservableList<String> row = FXCollections.observableArrayList(); 
-		row.addAll(Integer.toString(id), itemCode, desc, Integer.toString(qty), "P" + Double.toString(price), "P" + Double.toString(price * qty));
+		ObservableList<String> row = FXCollections.observableArrayList();
+		row.addAll(Integer.toString(id), itemCode, name, Integer.toString(qty), "P" + price.toString(), "P" + price.multiply(BigDecimal.valueOf(qty)).toString());
 		Table.getItems().add(FXCollections.observableArrayList(row));
 	}
 	
-	public void updateCart(int index, int id, String itemCode, String desc, int qty, double price){
-		ObservableList<String> row = FXCollections.observableArrayList(); 
-		row.addAll(Integer.toString(id), itemCode, desc, Integer.toString(qty), "P" + Double.toString(price), "P" + Double.toString(price * qty));
+	public void updateCart(int index, int id, String itemCode, String desc, int qty, BigDecimal price){
+		ObservableList<String> row = FXCollections.observableArrayList();
+		row.addAll(Integer.toString(id), itemCode, desc, Integer.toString(qty), "P" + price.toString(), "P" + price.multiply(BigDecimal.valueOf(qty)).toString());
 		Table.getItems().set(index,FXCollections.observableArrayList(row));
 	}
 	
-	public void addToSearch(String itemCode, String desc, int qty, double price, String type){
+	public void addToSearch(String itemCode, String name, String desc, String category, String manufacturer, int stock, BigDecimal price){
 		ObservableList<String> row = FXCollections.observableArrayList(); 
-		row.addAll(itemCode, desc, Integer.toString(qty), "P" + Double.toString(price), "P" + Double.toString(price * qty));
+		row.addAll(itemCode, name, desc, category, manufacturer, Integer.toString(stock), "P" + price.toString());
 		Table.getItems().add(FXCollections.observableArrayList(row));
 	}
 	
@@ -276,15 +290,15 @@ public class TableMaker {
 		Table.getItems().add(FXCollections.observableArrayList(row));
 	}
 	
-	public void updateSearch(int index, String itemCode, String desc, int qty, double price){
+	public void updateSearch(int index, String itemCode, String name, String desc, String category, String manufacturer, int stock, BigDecimal price){
 		ObservableList<String> row = FXCollections.observableArrayList(); 
-		row.addAll(itemCode, desc, Integer.toString(qty), "P" + Double.toString(price), "P" + Double.toString(price * qty));
+		row.addAll(itemCode, name, desc, category, manufacturer, Integer.toString(stock), "P" + price.toString());
 		Table.getItems().set(index,FXCollections.observableArrayList(row));
 	}
 	
-	public void updateSearch(int id, String name, double salary) {
+	public void updateSearch(int id, String name, BigDecimal salary) {
 		ObservableList<String> row = FXCollections.observableArrayList();
-		row.addAll(Integer.toString(id), name, "P" + Double.toString(salary));
+		row.addAll(Integer.toString(id), name, "P" + salary.toString());
 		Table.getItems().set(id, FXCollections.observableArrayList(row));
 	}
 	

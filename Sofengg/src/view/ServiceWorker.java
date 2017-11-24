@@ -44,6 +44,11 @@ public class ServiceWorker extends ExternalSearch {
 				break;
 			}
 		});
+		
+		revertButton.setOnAction(e -> {
+			searchTable.reset();
+			initServiceWorkers(CommonQuery.getWorkers());
+		});
 	}
 
 	public void initServiceWorkers(ArrayList<Worker> workers){

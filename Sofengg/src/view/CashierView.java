@@ -48,6 +48,9 @@ public class CashierView extends GridPane implements View{
 		CustBox = new CustomerBox(cvc);	
 		NavBox = new NavigationBox(cvc);
 		CartPane = new CartPane (cvc);
+		
+		//listener
+		NavBox.setCallbackListener(CartPane);
 	}
 
 	private void initLogo() {

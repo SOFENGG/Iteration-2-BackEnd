@@ -1,9 +1,11 @@
 package view;
 
-import view.TableMaker;
-import view.AlertBox;
-import view.CashierPrompts;
-import view.CheckoutPrompt;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+
 import controller.CashierViewController;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -16,7 +18,6 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -24,8 +25,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import model.CartItem;
+import model.Item;
+import util.CommonQuery;
 
-public class CartPane extends TabPane implements View{
+public class CartPane extends TabPane implements View, CallbackListener{
 
 	private CashierViewController cvc;
 	
@@ -43,6 +47,8 @@ public class CartPane extends TabPane implements View{
 		setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 		
 		initCP ();
+
+		refreshSearchItem(CommonQuery.allItems());
 	}
 	
 	private void initCP() {
@@ -88,23 +94,30 @@ public class CartPane extends TabPane implements View{
 		        	if(selected != null){
 		        		CashierPrompts cp = new CashierPrompts("Remove", selected);
 		        		
+			        	//<!-- handles remove cart item functionalities -->
+		        		
 			        	int qtyToRemove = cp.runWindow(),
 			        	    qty = Integer.parseInt(selected.get(3));
 			        	
-			        	//XXX
-			        	if(qtyToRemove != 0){
-			        		moveToSearch(selected.get(1), selected.get(2), qtyToRemove, Double.parseDouble(selected.get(4).substring(1)), "WHOLE SALE");
-			        	}
-			        	if(qty == qtyToRemove){
-			        		ongoingWTable.getRawTable().getItems().remove(selected);
-			        	}
-			        	else {
-			        		int index = ongoingWTable.getRawTable().getItems().indexOf(selected) ;
-			        		qty -= qtyToRemove;
-			        		String itemCode = selected.get(1),
-			        			   desc = selected.get(2);
-			        		double price = Double.parseDouble(selected.get(4).substring(1));
-			        		ongoingWTable.updateCart(index,index+ 1, itemCode, desc, qty, price);
+			        	Item item = CommonQuery.searchItemByCode(selected.get(1)).get(0);
+			        	
+			        	if(item.getReserved() >= qtyToRemove){
+			        		cvc.removeCartItem(selected.get(1), qtyToRemove);
+			        		
+			        		moveToSearch(selected.get(1), qtyToRemove);
+			        		
+			        		if(qtyToRemove == qty){
+			        			ongoingWTable.getRawTable().getItems().remove(selected);
+			        		}else if(qtyToRemove > 0){
+			        			int index = ongoingWTable.getRawTable().getItems().indexOf(selected) ;
+				        		qty -= qtyToRemove;
+				        		String itemCode = selected.get(1),
+				        			   desc = selected.get(2);
+				        		double price = Double.parseDouble(selected.get(4).substring(1));
+				        		ongoingWTable.updateCart(index,index+ 1, itemCode, desc, qty, BigDecimal.valueOf(price));
+			        		}
+			        		
+			        		//refresh search items here
 			        		
 			        	}
 		        	}
@@ -112,7 +125,6 @@ public class CartPane extends TabPane implements View{
 		        changeCartCost();
 		    }
 		});
-		
 		ongoingRTable.getRawTable().setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override 
 		    public void handle(MouseEvent event) {
@@ -121,23 +133,29 @@ public class CartPane extends TabPane implements View{
 		        	if(selected != null){
 		        		CashierPrompts cp = new CashierPrompts("Remove", selected);
 		        		
+			        	//<!-- handles remove cart item functionalities -->
+		        		
 			        	int qtyToRemove = cp.runWindow(),
 			        	    qty = Integer.parseInt(selected.get(3));
 			        	
-			        	//XXX
-			        	if(qtyToRemove != 0){
-			        		moveToSearch(selected.get(1), selected.get(2), qtyToRemove, Double.parseDouble(selected.get(4).substring(1)), "RETAIL SALE");
-			        	}
-			        	if(qty == qtyToRemove){
-			        		ongoingRTable.getRawTable().getItems().remove(selected);
-			        	}
-			        	else {
-			        		int index = ongoingRTable.getRawTable().getItems().indexOf(selected);
-			        		qty -= qtyToRemove;
-			        		String itemCode = selected.get(1),
-			        			   desc = selected.get(2);
-			        		double price = Double.parseDouble(selected.get(4).substring(1));
-			        		ongoingRTable.updateCart(index, index + 1, itemCode, desc, qty, price);
+			        	Item item = CommonQuery.searchItemByCode(selected.get(1)).get(0);
+			        	
+			        	if(item.getReserved() >= qtyToRemove){
+			        		cvc.removeCartItem(selected.get(1), qtyToRemove);
+			        		
+			        		moveToSearch(selected.get(1), qtyToRemove);
+			        		
+			          		if(qty == qtyToRemove){
+			        			ongoingRTable.getRawTable().getItems().remove(selected);
+			          		}else if(qtyToRemove > 0){
+			        			int index = ongoingRTable.getRawTable().getItems().indexOf(selected) ;
+				        		qty -= qtyToRemove;
+				        		String itemCode = selected.get(1),
+				        			   desc = selected.get(2);
+				        		double price = Double.parseDouble(selected.get(4).substring(1));
+				        		ongoingRTable.updateCart(index,index+ 1, itemCode, desc, qty, BigDecimal.valueOf(price));
+			        		}
+			        		//refresh search items here
 			        		
 			        	}
 		        	}
@@ -176,8 +194,7 @@ public class CartPane extends TabPane implements View{
                 	if(WoRTab.getText().equals("WHOLE SALE")){
                 		WoRTab.setText("RETAIL SALE");
                 		TranBox.getChildren().set(0, ongoingRTable.getTable());
-                	}
-                	else {
+                	}else {
                 		WoRTab.setText("WHOLE SALE");
                 		TranBox.getChildren().set(0, ongoingWTable.getTable());
                 	}
@@ -222,12 +239,12 @@ public class CartPane extends TabPane implements View{
 				if(selected.get(1).equals(itemCode)){
 					int oldQty = Integer.parseInt(selected.get(3));
 					qty += oldQty;
-					 ongoingWTable.updateCart(x, x + 1, itemCode, desc, qty, price);
+					ongoingWTable.updateCart(x, x + 1, itemCode, desc, qty, BigDecimal.valueOf(price));
 					found = true;
 				}
 			}
 			if(!found)
-				ongoingWTable.addToCart(itemCode, desc, qty, price);
+				ongoingWTable.addToCart(itemCode, desc, qty, BigDecimal.valueOf(price));
     	}
     	else if(WoRTab.getText().equals("RETAIL SALE")){
     		for(int x = 0; x<ongoingRTable.getRawTable().getItems().size(); x++){
@@ -235,32 +252,32 @@ public class CartPane extends TabPane implements View{
 				if(selected.get(1).equals(itemCode)){
 					int oldQty = Integer.parseInt(selected.get(3));
 					qty += oldQty;
-					ongoingRTable.updateCart(x, x + 1, itemCode, desc, qty, price);
+					ongoingRTable.updateCart(x, x + 1, itemCode, desc, qty, BigDecimal.valueOf(price));
 					found = true;
 				}
 			}
 			if(!found)
-				ongoingRTable.addToCart(itemCode, desc, qty, price);
+				ongoingRTable.addToCart(itemCode, desc, qty, BigDecimal.valueOf(price));
     	}
 		
 		changeCartCost();
 	}
 	
 	//XXX
-	public void moveToSearch(String itemCode, String desc, int qty, double price, String type){
+	public void moveToSearch(String itemCode, int qty){
 		ObservableList<String> selected;
-		boolean found = false;
+		//boolean found = false;
 		for(int x = 0; x<searchTable.getRawTable().getItems().size(); x++){
 			selected = searchTable.getRawTable().getItems().get(x);
 			if(selected.get(0).equals(itemCode)){
-				int oldQty = Integer.parseInt(selected.get(2));
+				int oldQty = Integer.parseInt(selected.get(5));
 				qty += oldQty;
-				searchTable.updateSearch(x, itemCode, desc, qty, price);
-				found = true;
+				searchTable.updateSearch(x, itemCode, selected.get(1), selected.get(2), selected.get(3), selected.get(4), qty, BigDecimal.valueOf(Double.parseDouble(selected.get(6).substring(1))));
+				//found = true;
 			}
 		}
-		if(!found)
-			searchTable.addToSearch(itemCode, desc, qty, price, type);
+		//if(!found)
+			//searchTable.addToSearch(itemCode, name, desc, category, manufacturer, qty, price);
 		
 		changeCartCost();	
 	}
@@ -316,17 +333,27 @@ public class CartPane extends TabPane implements View{
 		clearCButton.setOnAction(e ->  {
 			ObservableList<String> selected; 
 			if(!ongoingWTable.getRawTable().getItems().isEmpty() || !ongoingRTable.getRawTable().getItems().isEmpty()){
+
+				/*
+				 * clears the cart functionality
+				*/
+				
+				cvc.clearCart();
+				
+				
 				if(WoRTab.getText().equals("WHOLE SALE")){
+					
 					for(int x = 0; x<ongoingWTable.getRawTable().getItems().size(); x++){
 						selected = ongoingWTable.getRawTable().getItems().get(x);
-						moveToSearch(selected.get(1), selected.get(2), Integer.parseInt(selected.get(3)), Double.parseDouble(selected.get(4).substring(1)), "WHOLE SALE");
+						moveToSearch(selected.get(1), Integer.parseInt(selected.get(3)));
 					}
+					
 	        		ongoingWTable.clearCart(false);
 	        	}
 	        	else {
 	        		for(int x = 0; x<ongoingRTable.getRawTable().getItems().size(); x++){
 	        			selected = ongoingRTable.getRawTable().getItems().get(x);
-						moveToSearch(selected.get(1), selected.get(2), Integer.parseInt(selected.get(3)), Double.parseDouble(selected.get(4).substring(1)), "RETAIL SALE");
+						moveToSearch(selected.get(1), Integer.parseInt(selected.get(3)));
 					}
 	        		ongoingRTable.clearCart(false);
 	        	}
@@ -341,11 +368,16 @@ public class CartPane extends TabPane implements View{
 		// checkout button
 		// GET CURRENT CUSTOMER ID
 		// to check if there is a user or not
-		// userID = 0 means no customer
+		// userID = -1 means no customer
 		COutButton.setOnAction(e -> {
 			double totalPrice = getCartCost();
-			int userID = 1;
-			CheckoutPrompt cp = new CheckoutPrompt("Checkout", totalPrice, userID);
+			int userID = -1;
+			
+			if(cvc.getCustomer() != null)
+				userID = cvc.getCustomer().getAccount_id();
+			
+			CheckoutPrompt cp = new CheckoutPrompt("Checkout", WoRTab.getText(), totalPrice, userID, cvc);
+			cp.setCheckoutListener(this);
 			cp.showBox();
 		});
 	}
@@ -367,16 +399,29 @@ public class CartPane extends TabPane implements View{
 		searchButton.setGraphic(searchView);
 		
 		RadioButton itemRadio = new RadioButton("Item Code"),
-					descRadio = new RadioButton("Description"),
-					servRadio = new RadioButton("Service");
+					descRadio = new RadioButton("Description");
+		
 		itemRadio.setToggleGroup(searchToggle);
+		itemRadio.setUserData("Item Code");
 		descRadio.setToggleGroup(searchToggle);
-		servRadio.setToggleGroup(searchToggle);
+		descRadio.setUserData("Description");
+		
 		searchToggle.selectToggle(itemRadio);
 		
 		searchInput.getChildren().addAll(searchButton, searchField);
-		searchBox.getChildren().addAll(searchInput, itemRadio, descRadio, servRadio);
+		searchBox.getChildren().addAll(searchInput, itemRadio, descRadio);
 		
+		searchButton.setOnAction(e -> {
+			switch(searchToggle.getSelectedToggle().getUserData().toString()){
+			case "Item Code": searchTable.reset();
+				refreshSearchItem(CommonQuery.searchItemByCode(searchField.getText()));
+				break;
+			case "Description": searchTable.reset();
+				refreshSearchItem(CommonQuery.searchItems(searchField.getText()));
+				break;
+			}
+		});
+	
 		initCartAdder();
 		
 		TranBox.getChildren().addAll(searchBox, searchTable.getTable());
@@ -392,22 +437,27 @@ public class CartPane extends TabPane implements View{
 		        	ObservableList<String> selected = searchTable.getRawTable().getSelectionModel().getSelectedItem();
 		        	if(selected != null){
 		        		CashierPrompts cp = new CashierPrompts("Add", selected);
+		        		
+		        		//<-- handles add to cart -->
+		        		
 			        	int qty = cp.runWindow(),
-			        		qtyActual = Integer.parseInt(selected.get(2));
+			        		qtyActual = Integer.parseInt(selected.get(5));
 			        	
-			        	if(qty != 0){
-			        		moveToCart(selected.get(0), selected.get(1), qty, Double.parseDouble(selected.get(3).substring(1)));
-			        	}
-			        	if(qtyActual == qty){
-			        		searchTable.getRawTable().getItems().remove(selected);
-			        	}
-			        	else if(qty != 0){
+			        	if(cvc.addToCart(selected.get(0), selected.get(1), BigDecimal.valueOf(Double.parseDouble(selected.get(6).substring(1))), qty)){
+			        		moveToCart(selected.get(0), selected.get(1), qty, Double.parseDouble(selected.get(6).substring(1)));
 			        		int index = searchTable.getRawTable().getItems().indexOf(selected);
 			        		qtyActual -= qty;
 			        		String itemCode = selected.get(0),
-				        			   desc = selected.get(1);
-				        		double price = Double.parseDouble(selected.get(3).substring(1));
-			        		searchTable.updateSearch(index, itemCode, desc, qtyActual, price);
+				        			   name = selected.get(1),
+			        					desc = selected.get(2),
+			        					category = selected.get(3),
+			        					manufacturer = selected.get(4);
+				        		double price = Double.parseDouble(selected.get(6).substring(1));
+			        		searchTable.updateSearch(index, itemCode, name, desc, category, manufacturer, qtyActual, BigDecimal.valueOf(price));
+			        	}else{
+			        		AlertBox notEnough = new AlertBox("Inventory");
+			        		notEnough.initAlertContents("Not enough stock");
+			        		notEnough.showBox();
 			        	}
 		        	}
 		        }
@@ -441,5 +491,46 @@ public class CartPane extends TabPane implements View{
 		
 	}
 	
+	public void refreshSearchItem(ArrayList<Item> items){
+		for(Item item : items){	
+			searchTable.addToSearch(item.getItemCode(),
+					item.getName(),
+					item.getDescription(),
+					item.getDescription(),
+					item.getManufacturer(),
+					item.getStock() - item.getReserved(),
+					item.getPriceCustomer());
+		}
+	}
+
+	@Override
+	public void checkout() {
+		// TODO Auto-generated method stub
+		if(WoRTab.getText().equals("WHOLE SALE")){
+			ongoingWTable.clearCart(false);
+    	}
+    	else {
+    		ongoingRTable.clearCart(false);
+    	}
+	}
+	
+	@Override
+	public void overrideCart(){
+		//update cart
+		if(WoRTab.getText().equals("WHOLE SALE")){
+			ongoingWTable.clearCart(false);
+			for(CartItem item : cvc.getCartItems()){
+				ongoingWTable.addToCart(item.getItemCode(), item.getName(), item.getQuantity(), item.getPriceSold());
+			}
+    	}
+    	else {
+    		ongoingRTable.clearCart(false);
+    		for(CartItem item : cvc.getCartItems()){
+				ongoingRTable.addToCart(item.getItemCode(), item.getName(), item.getQuantity(), item.getPriceSold());
+			}
+    	}
+		//update total
+		changeCartCost();
+	}
 
 }

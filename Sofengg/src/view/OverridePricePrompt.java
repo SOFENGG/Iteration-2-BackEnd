@@ -2,6 +2,11 @@ package view;
 
 import view.AlertBox;
 import view.TableMaker;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+
+import controller.CashierViewController;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
@@ -13,27 +18,34 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import model.CartItem;
 
 public class OverridePricePrompt extends AlertBox {
 	
 	private VBox promptBox;
+	private CashierViewController cvc;
 	
-	public OverridePricePrompt(String title) {
+	private CartItem itemSelected;
+	private CallbackListener callbackListener;
+	
+	public OverridePricePrompt(String title, CashierViewController cvc) {
 		super(title);
+		this.cvc = cvc;
+		
 		initItemSelect();
 		initPriceInput();
 		initSearchAdder();
-		addToReturnSearch("1010101", "gass and stuff", 2, 300, "RETAIL SALE");
 		initGridConstraints();
 		addToGrid();
 	}
 	
 	public void runWindow() {
+		populateCartTable();
 		showBox();
 	}
 	
 	protected Label lbl = new Label("Select item to change price:");
-	protected TableMaker cartTable = new TableMaker("Search");
+	protected TableMaker cartTable = new TableMaker("Ongoing");
 	protected Label lbl2 = new Label("Current item:");
 	protected Label itemInfo = new Label("");
 	protected Label newPriceLbl = new Label("New unit price: ");
@@ -63,6 +75,10 @@ public class OverridePricePrompt extends AlertBox {
 				a.showAndWait();
 				closeBox();
 				// CHANGE PRICE IN CART
+				if(itemSelected != null){
+					cvc.overridePrice(itemSelected, BigDecimal.valueOf(newPrice));
+					callbackListener.overrideCart();
+				}
 			} else {
 				Alert a = new Alert(AlertType.ERROR);
 				a.setTitle("Error");
@@ -85,14 +101,19 @@ public class OverridePricePrompt extends AlertBox {
 		    public void handle(MouseEvent event) {
 				
 		        if (event.isPrimaryButtonDown() && event.getClickCount() == 1) {
-		        	itemInfo.setText("This should contain the clicked item's info");
+		        	ObservableList<String> selected = cartTable.getRawTable().getSelectionModel().getSelectedItem();
+		        	if(selected != null){
+	        			int index = cartTable.getRawTable().getItems().indexOf(selected) ;
+	        			itemSelected = cvc.getCartItems().get(index);
+	        			lbl2.setText("Current Item: " + itemSelected.getName());
+		        	}
 		        }
 			}
 		});
 		
 	}
 	
-	public void addToReturnSearch(String itemCode, String desc, int qty, double price, String type){
+	public void addToReturnSearch(String itemCode, String name, String desc, String category, String manufacturer, int qty, BigDecimal price){
 		ObservableList<String> selected;
 		boolean found = false;
 		for(int x = 0; x<cartTable.getRawTable().getItems().size(); x++){
@@ -100,12 +121,12 @@ public class OverridePricePrompt extends AlertBox {
 			if(selected.get(0).equals(itemCode)){
 				int oldQty = Integer.parseInt(selected.get(2));
 				qty += oldQty;
-				cartTable.updateSearch(x, itemCode, desc, qty, price);
+				cartTable.updateSearch(x, itemCode, name, desc, category, manufacturer, qty, price);
 				found = true;
 			}
 		}
 		if(!found)
-			cartTable.addToSearch(itemCode, desc, qty, price, type);
+			cartTable.addToSearch(itemCode, name, desc, category, manufacturer, qty, price);
 	}
 
 	public boolean isDouble(String str) {
@@ -123,5 +144,17 @@ public class OverridePricePrompt extends AlertBox {
 
 	private void addToGrid() {
 		getGrid().getChildren().addAll(promptBox);
+	}
+	
+	public void populateCartTable(){
+		ArrayList<CartItem> cartItems = cvc.getCartItems();
+		
+		for(CartItem item : cartItems){
+			cartTable.addToCart(item.getItemCode(), item.getName(), item.getQuantity(), item.getPriceSold());
+		}
+	}
+	
+	public void setCallbackListener(CallbackListener callbackListener){
+		this.callbackListener = callbackListener;
 	}
 }

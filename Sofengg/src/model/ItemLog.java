@@ -9,7 +9,7 @@ public class ItemLog {
 	public static final String COLUMN_TRANSACTION_ID = "transaction_ID";
 	public static final String COLUMN_TYPE = "type";
 	public static final String COLUMN_QUANTITY_SOLD = "quantity_sold";
-	public static final String COLUMN_ORIGINAL_SOLD = "original_sold";
+	public static final String COLUMN_ORIGINAL_SOLD = "original_price";
 	public static final String COLUMN_PRICE_SOLD = "price_sold";
 	
 	private String saleId;
