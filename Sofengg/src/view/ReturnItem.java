@@ -58,8 +58,6 @@ public class ReturnItem extends ExternalSearch{
 		    public void handle(MouseEvent event) {
 		        if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
 		        	returningRow = new ArrayList<String>(searchTable.getRawTable().getSelectionModel().getSelectedItem());
-		        	for (String string: returningRow)
-		        		System.out.println(string);
 		        	addToReturnSearch(returningRow.get(0), returningRow.get(1), returningRow.get(2), returningRow.get(3),
 		        			returningRow.get(4), Integer.parseInt(returningRow.get(5)), new BigDecimal (returningRow.get(6).substring(1)));
 		        	//closeBox();
@@ -77,7 +75,6 @@ public class ReturnItem extends ExternalSearch{
 			if(selected.get(0).equals(itemCode)){
 				int oldQty = Integer.parseInt(selected.get(5));
 				qty += oldQty;
-				System.out.println(qty);
 				searchTable.updateSearch(x, itemCode, name, desc, category, manufacturer, qty, price);
 				found = true;
 				
