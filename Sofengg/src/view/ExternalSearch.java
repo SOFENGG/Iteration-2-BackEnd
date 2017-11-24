@@ -46,7 +46,6 @@ public class ExternalSearch extends AlertBox implements ExternalSearchInterface 
 	
 	public ArrayList<String> runWindow(){
 		showBox();
-		cl.refreshTable();
 		return returningRow;
 	}
 	
