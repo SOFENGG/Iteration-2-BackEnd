@@ -211,7 +211,7 @@ public class CartPane extends TabPane implements View, CallbackListener{
 	}
 	
 	//for setting the transaction type when restoring a held cart - anj
-	/*public void setWoR(String transactionType) {
+	public void setWoR(String transactionType) {
 		if (transactionType.equals("WHOLE SALE")) {
 			WoRTab.setText("WHOLE SALE");
     		TranBox.getChildren().set(0, ongoingWTable.getTable());
@@ -221,7 +221,7 @@ public class CartPane extends TabPane implements View, CallbackListener{
 		}
 		changeCartCost();
     	getSelectionModel().select(0);	
-	}*/
+	}
 	
 	public void clearAllTables(boolean logOut){
 		ongoingWTable.clearCart(logOut);
@@ -379,6 +379,14 @@ public class CartPane extends TabPane implements View, CallbackListener{
 			CheckoutPrompt cp = new CheckoutPrompt("Checkout", WoRTab.getText(), totalPrice, userID, cvc);
 			cp.setCheckoutListener(this);
 			cp.showBox();
+		});
+		
+		holdButton.setOnAction(e -> {
+			cvc.holdCart(WoRTab.getText());
+			if (WoRTab.getText().equals("RETAIL SALE"))
+				ongoingRTable.clearCart(false);
+			else
+				ongoingWTable.clearCart(false);
 		});
 	}
 	
