@@ -272,7 +272,7 @@ public class CashierViewController {
 				reserved.setString(3, ci.getItemCode());
 				
 				//calculates for total price of whole cart
-				totalPrice = totalPrice.add(ci.getPriceSold());
+				totalPrice = totalPrice.add(ci.getPriceSold().multiply(BigDecimal.valueOf(ci.getQuantity())));
 					
 				Database.getInstance().executeUpdate(log);
 				Database.getInstance().executeUpdate(reserved);

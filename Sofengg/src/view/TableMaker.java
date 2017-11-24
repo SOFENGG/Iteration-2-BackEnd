@@ -291,7 +291,7 @@ public class TableMaker {
 	}
 	
 	public void updateSearch(int index, String itemCode, String name, String desc, String category, String manufacturer, int stock, BigDecimal price){
-		ObservableList<String> row = FXCollections.observableArrayList(); 
+		ObservableList<String> row = FXCollections.observableArrayList();
 		row.addAll(itemCode, name, desc, category, manufacturer, Integer.toString(stock), "P" + price.toString());
 		Table.getItems().set(index,FXCollections.observableArrayList(row));
 	}

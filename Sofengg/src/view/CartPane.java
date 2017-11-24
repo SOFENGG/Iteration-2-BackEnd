@@ -532,5 +532,10 @@ public class CartPane extends TabPane implements View, CallbackListener{
 		//update total
 		changeCartCost();
 	}
+	
+	@Override
+	public void refreshTable () {
+		searchTable.getRawTable().refresh();
+	}
 
 }

@@ -18,6 +18,8 @@ import javafx.scene.layout.VBox;
 
 public class ExternalSearch extends AlertBox implements ExternalSearchInterface {
 
+	private CallbackListener cl;
+	
 	protected VBox promptBox;
 	
 	protected Image searchIcon = new Image(("search-icon.png"));
@@ -44,6 +46,7 @@ public class ExternalSearch extends AlertBox implements ExternalSearchInterface 
 	
 	public ArrayList<String> runWindow(){
 		showBox();
+		cl.refreshTable();
 		return returningRow;
 	}
 	
@@ -99,8 +102,8 @@ public class ExternalSearch extends AlertBox implements ExternalSearchInterface 
 		for(int x = 0; x<searchTable.getRawTable().getItems().size(); x++){
 			selected = searchTable.getRawTable().getItems().get(x);
 			if(selected.get(0).equals(itemCode)){
-				int oldQty = Integer.parseInt(selected.get(2));
-				qty += oldQty;
+				int oldQty = Integer.parseInt(selected.get(5));
+				System.out.println(qty);
 				searchTable.updateSearch(x, itemCode, name, desc, category, manufacturer, qty, price);
 				found = true;
 				
@@ -128,5 +131,9 @@ public class ExternalSearch extends AlertBox implements ExternalSearchInterface 
 
 	@Override
 	public void initSearchToggles() {}
+
+	public void setCallbackListener(CallbackListener callbackListener) {
+		this.cl = callbackListener;
+	}
 
 }

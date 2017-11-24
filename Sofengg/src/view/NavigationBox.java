@@ -81,6 +81,7 @@ public class NavigationBox extends VBox implements View{
 		
 		returnItemB.setOnAction(e -> {
 			ExternalSearch es = esf.getExternalSearch(returnItemB.getText());
+			es.setCallbackListener(callbackListener);
 			es.runWindow();
 		});
 		serviceWorkerB.setOnAction(e -> {
