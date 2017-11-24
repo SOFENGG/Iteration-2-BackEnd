@@ -71,7 +71,7 @@ public class OverridePricePrompt extends AlertBox {
 				a.setTitle("Done");
 				a.setHeaderText("Success");
 				// GET ITEM INFO FROM DB
-				a.setContentText("Price of <item name> changed to PHP " + newPrice);
+				a.setContentText("Price of " + itemSelected.getName() + " changed to PHP " + newPrice);
 				a.showAndWait();
 				closeBox();
 				// CHANGE PRICE IN CART
