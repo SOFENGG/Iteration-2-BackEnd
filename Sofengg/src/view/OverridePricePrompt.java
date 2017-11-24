@@ -47,7 +47,6 @@ public class OverridePricePrompt extends AlertBox {
 	protected Label lbl = new Label("Select item to change price:");
 	protected TableMaker cartTable = new TableMaker("Ongoing");
 	protected Label lbl2 = new Label("Current item:");
-	protected Label itemInfo = new Label("");
 	protected Label newPriceLbl = new Label("New unit price: ");
 	protected TextField newPriceInput = new TextField();
 	protected Button okButton = new Button("OK");
@@ -56,7 +55,7 @@ public class OverridePricePrompt extends AlertBox {
 	private void initItemSelect() {
 		promptBox = new VBox(10);
 		VBox itemBox = new VBox(10);
-		itemBox.getChildren().addAll(lbl, cartTable.getTable(), lbl2, itemInfo);
+		itemBox.getChildren().addAll(lbl, cartTable.getTable(), lbl2);
 		promptBox.getChildren().add(itemBox);
 	}
 	
