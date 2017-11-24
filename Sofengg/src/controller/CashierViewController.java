@@ -222,6 +222,10 @@ public class CashierViewController {
 		cartItems.clear();
 	}
 	
+	public ArrayList<Cart> getCartBuffer() {
+		return cartBuffer;
+	}
+	
 	public void restoreCart(int index) {
 		cartItems.clear();
 		cartItems = cartBuffer.get(index).getCartItems();
