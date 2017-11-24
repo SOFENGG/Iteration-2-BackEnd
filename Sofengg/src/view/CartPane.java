@@ -387,6 +387,8 @@ public class CartPane extends TabPane implements View, CallbackListener{
 				ongoingRTable.clearCart(false);
 			else
 				ongoingWTable.clearCart(false);
+			Cart cart = cvc.getCartBuffer().get(cvc.getCartBuffer().size() - 1);
+			addToHold(cart.getDate(), cart.getTime(), cart.getTotalPrice(), cart.getTransactionType());
 		});
 	}
 	
