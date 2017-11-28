@@ -317,10 +317,10 @@ public class TableMaker {
 		}
 	}
 	
-	public void addToHold(String date, String time, double total, String type){
+	public void addToHold(String date, String time, BigDecimal bigDecimal, String type){
 		int id = Table.getItems().size() + 1;
 		ObservableList<String> row = FXCollections.observableArrayList(); 
-		row.addAll(Integer.toString(id), date, time, "P" + Double.toString(total), type);
+		row.addAll(Integer.toString(id), date, time, "P" + bigDecimal.toString(), type);
 		Table.getItems().add(FXCollections.observableArrayList(row));
 	}
 

@@ -25,6 +25,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import model.Cart;
 import model.CartItem;
 import model.Item;
 import util.CommonQuery;
@@ -282,8 +283,8 @@ public class CartPane extends TabPane implements View, CallbackListener{
 		changeCartCost();	
 	}
 	
-	public void addToHold(String date, String time, double total, String type){
-		holdTable.addToHold(date, time, total, type);
+	public void addToHold(String date, String time, BigDecimal bigDecimal, String type){
+		holdTable.addToHold(date, time, bigDecimal, type);
 	}
 	
 	public double getCartCost() {
